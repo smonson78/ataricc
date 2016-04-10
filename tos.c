@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <stdarg.h>
+
 #include "tos.h"
 
 
@@ -31,16 +33,29 @@ int32_t Cnecin()
     return val;
 }
 
-#if 0
-void __printf (const char *format, ...)
+#if 1
+typedef struct {
+} FILE;
+
+FILE *stdout = (FILE *)1;
+
+int vfprintf(FILE *stream, const char *format, va_list arg)
+{
+	return 0;
+}
+
+int __printf (const char *format, ...)
 {
    va_list arg;
    int done;
 
    va_start (arg, format);
-   //done = vfprintf (stdout, format, arg);
+   done = vfprintf (stdout, format, arg);
    va_end (arg);
 
    return done;
 }
+
+
+
 #endif
