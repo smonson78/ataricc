@@ -19,7 +19,6 @@ void Cconws(const char* s)
 
 void Cconout(const uint16_t ch)
 {
-	//const char _ch = ch;
     __asm__ __volatile__
     (
 		"move.w %0,-(%%sp)\n\t"

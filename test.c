@@ -1,4 +1,5 @@
 #include <tos.h>
+#include <libc.h>
 
 int main(int argc, char **argv)
 {
@@ -16,6 +17,8 @@ int main(int argc, char **argv)
 	
 	for (p = test_string; *p; p++)
 		Cconout(*p);
+		
+	printf("Hello %% Atari #%c.\n", '2');
 		
 	Cnecin();
 
