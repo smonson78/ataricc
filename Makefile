@@ -17,11 +17,15 @@ crt0.o: crt0.c
 
 clean:
 	$(RM) $(TARGET) *.o *.elf test.bin
+	$(RM) *~
 
 dasm: $(TARGET)
-	dd bs=1 skip=28 if=$(TARGET) of=test.bin
-	m68k-elf-objdump -m m68k -D -b binary test.bin
+	@dd bs=1 skip=28 if=$(TARGET) of=test.bin
+	@m68k-elf-objdump -m m68k -D -b binary test.bin
 	@$(RM) test.bin
+
+info: elf
+	@m68k-elf-objdump -h info.elf
 
 elf: test.elf
 test.elf: crt0.o test.o tos.o libc.o $(LIBGCC)
