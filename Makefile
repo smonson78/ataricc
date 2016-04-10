@@ -1,5 +1,5 @@
 CC=m68k-elf-gcc
-CFLAGS=-m68000 -Wall -fomit-frame-pointer -Os -I.
+CFLAGS=-g -m68000 -Wall -fomit-frame-pointer -Os -I.
 
 INSTALL=/home/simon/dev/XSteem/hd
 TARGET=test.tos
@@ -22,9 +22,10 @@ dasm: $(TARGET)
 	@$(RM) test.bin
 
 elf: test.elf
-test.elf: crt0.o test.o tos.o
+test.elf: crt0.o test.o tos.o libc.o
 	@# Run linker, generate a relocatable object file of the whole project
 	m68k-elf-ld -Tatari.ld --relocatable $^ -o test.elf
+	m68k-elf-ld -Tatari.ld $^ -o info.elf
 
 install: $(TARGET)
 	cp --target-directory=$(INSTALL) $(TARGET)

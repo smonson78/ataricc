@@ -22,6 +22,7 @@ SECTIONS {
 	
 	.discard : {
 		*(.comment)
+		*(.debug*)
 	}
 }
 
