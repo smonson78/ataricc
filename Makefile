@@ -1,8 +1,10 @@
 CC=m68k-elf-gcc
 CFLAGS=-g -m68000 -Wall -fomit-frame-pointer -Os -I.
+LDFLAGS=-lgcc
 
 INSTALL=/home/simon/dev/XSteem/hd
 TARGET=test.tos
+LIBGCC=/home/simon/gcc-m68k/lib/gcc/m68k-elf/5.3.0/m68000/libgcc.a
 
 $(TARGET): test.elf
 	@# Strip out .discard section and make .text writable before passing to vlink
@@ -22,7 +24,7 @@ dasm: $(TARGET)
 	@$(RM) test.bin
 
 elf: test.elf
-test.elf: crt0.o test.o tos.o libc.o
+test.elf: crt0.o test.o tos.o libc.o $(LIBGCC)
 	@# Run linker, generate a relocatable object file of the whole project
 	m68k-elf-ld -Tatari.ld --relocatable $^ -o test.elf
 	m68k-elf-ld -Tatari.ld $^ -o info.elf
