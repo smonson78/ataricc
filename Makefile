@@ -1,5 +1,5 @@
 CC=m68k-elf-gcc
-CFLAGS=-g -m68000 -Wall -fomit-frame-pointer -Os -I.
+CFLAGS=-g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
 LDFLAGS=-lgcc
 
 INSTALL=/home/simon/dev/XSteem/hd
@@ -24,14 +24,17 @@ dasm: $(TARGET)
 	@m68k-elf-objdump -m m68k -D -b binary test.bin
 	@$(RM) test.bin
 
-info: elf
+info: debug
 	@m68k-elf-objdump -h info.elf
 
 elf: test.elf
-test.elf: crt0.o test.o tos.o libc.o $(LIBGCC)
+test.elf: crt0.o test.o tos.o libc.o aes.o $(LIBGCC)
 	@# Run linker, generate a relocatable object file of the whole project
 	m68k-elf-ld -Tatari.ld --relocatable $^ -o test.elf
-	m68k-elf-ld -Tatari.ld $^ -o info.elf
+	#m68k-elf-ld -Tatari.ld $^ -o info.elf
+
+debug: crt0.o test.o tos.o libc.o aes.o $(LIBGCC)
+	m68k-elf-ld -Tdebug.ld $^ -o info.elf
 
 install: $(TARGET)
 	cp --target-directory=$(INSTALL) $(TARGET)

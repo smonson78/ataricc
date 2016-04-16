@@ -20,16 +20,16 @@ static int16_t fmt_int(uint32_t val, int16_t base, int16_t neg, char *buf)
 	
 	/* Convert number to series of digits */
 	while (val)	{
-		temp[size++] = val % base;
+		temp[size++] = digits[val % base];
 		val /= base;
 	}
 	
 	/* Reverse digits into output buffer */
 	for (i = 0; i < size; i++) {
-		buf[size - i - 1] = digits[(int)temp[i]];
+		buf[size - i - 1] = temp[i];
 	}
 
-	//buf[size] = 0;
+	buf[size] = 0;
 	return size;
 }
 
@@ -69,10 +69,10 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 			}
 
 			/* Field width */
-			while (*format >= '0' && *format <= '9')
+			while (isdigit(*format))
 			{
 				width *= 10;
-				width += (*format) % 10;
+				width += *format - '0';
 				format++;
 			}
 			
@@ -136,14 +136,21 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 	return 0;
 }
 
+int16_t isdigit(char c)
+{
+	if (c >= '0' && c <= '9')
+		return 1;
+	return 0;
+}
+
 int printf (const char *format, ...)
 {
    va_list arg;
    int done;
 
-   va_start (arg, format);
-   done = vfprintf (stdout, format, arg);
-   va_end (arg);
+   va_start(arg, format);
+   done = vfprintf(stdout, format, arg);
+   va_end(arg);
 
    return done;
 }
@@ -157,5 +164,17 @@ int puts(const char *s)
 		Cconout(*s);
 	}
 	return 0;
+}
+
+void memcpy(void *dest, void *src, size_t bytes)
+{
+	while (bytes--) {
+		*((char *)dest++) = *((char *)src++);
+	}
+}
+
+void exit(uint16_t retval)
+{
+	_exit(retval);
 }
 

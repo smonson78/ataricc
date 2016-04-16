@@ -111,4 +111,27 @@ int32_t Random()
     return val;
 }
 
+int16_t Getrez()
+{
+	register int16_t val __asm__("d0");
+    __asm__ __volatile__
+    (
+        "move.w #4,-(%%sp)\n\t"
+        "trap #14\n\t"
+        "addq.l #2,%%sp\n\t"
+    : "=r"(val) /* outputs */
+    : /* inputs */
+    : "d1", "d2", "a0", "a1", "a2" /* clobbered regs */
+    );
+    return val;
+}
+
+
+
+
+
+
+
+
+
 

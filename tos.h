@@ -14,5 +14,6 @@ int32_t Mshrink(void *block, int32_t newsize);
 
 // XBIOS
 int32_t Random();
+int16_t Getrez();
 
 #endif
