@@ -107,7 +107,13 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				else
 					length = fmt_int(va_arg(arg, int), 16, neg, temp);
 				break;
-				
+
+			case 'p':
+				length = fmt_int(va_arg(arg, long int), 16, 0, temp);
+				width = 8;
+				fill = '0';
+				break;
+
 			default:
 				/* It's an error! */
 				continue;
@@ -143,7 +149,7 @@ int16_t isdigit(char c)
 	return 0;
 }
 
-int printf (const char *format, ...)
+int printf(const char *format, ...)
 {
    va_list arg;
    int done;

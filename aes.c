@@ -2,7 +2,6 @@
 #include <tos.h>
 #include <libc.h>
 
-
 static AESPB c;
 static VDIPB v;
 
@@ -205,6 +204,15 @@ int16_t appl_init()
 	c.cb_pintout = int_out;
 	c.cb_padrin = addr_in;
 	c.cb_padrout = addr_out;
+	
+	// Set up VDIPB
+	v.contrl = control;
+	v.intin = int_in;
+	v.ptsin = addr_in;
+	v.intout = int_out;
+	v.ptsout = addr_out;
+	
+	
 
 	control[4] = 0;
 	global[0] = 0;
@@ -231,8 +239,11 @@ int16_t crys_if(int16_t opcode)
         printf("\tcontrol[2] = 0x%04x\n", c.cb_pcontrol[2]);
         printf("\tcontrol[3] = 0x%04x\n", c.cb_pcontrol[3]);
         printf("\tcontrol[4] = 0x%04x\n", c.cb_pcontrol[4]);
-        
+       
         aes();
+        
+        printf("\tResult = 0x%04x\n", int_out[0]);
+        Cnecin();
         return int_out[0];
 }
 
@@ -253,15 +264,20 @@ void vq_extnd (int16_t handle, int16_t owflag, int16_t *work_out)
 
 void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out)
 {
-	memcpy(int_in, work_in, 11);
+	printf("v_opnwk()\n");
+	memcpy(int_in, work_in, sizeof(int16_t) * 11);
 
 	control[0] = 100;
 	control[1] = 0;
 	control[3] = 11;
 	control[6] = *handle;
 
+	printf("about to call vdi()\n");
+	Cnecin();
 	vdi();
-
+	printf("Result: 0x%04x\n", int_out[0]);
+	Cnecin();
+	
 	*handle = control[6];
 	memcpy(work_out, int_out, 45);
 	memcpy(work_out + 45, addr_out, 12);
@@ -293,6 +309,8 @@ int16_t graf_handle (int16_t *gr_hwchar, int16_t *gr_hhchar,
 	int16_t *gr_hwbox, int16_t *gr_hhbox)
 {
    crys_if(77);
+   printf("* crys_if(77) called\n");
+   Cnecin();
 
    *gr_hwchar = int_out[1];
    *gr_hhchar = int_out[2];

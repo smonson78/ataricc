@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	int16_t gr_wbox, gr_hbox;
 
 	printf("Started up OK.\n");
-	
+
 	app_id = appl_init();
 	if (app_id < 0) {
 		Cconws("***> Initialization error.\n");
@@ -38,16 +38,17 @@ int main(int argc, char **argv)
 		Cnecin();
 		exit(1);
 	}
-	
+
 	printf("Application ID: 0x%08x\n", app_id);
 	
 	screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
 	printf("Screen phandle: 0x%08x\n", screen_phandle);
-	
+	Cnecin();
+
 	screen_vhandle = open_vwork(screen_phandle);
 	printf("Screen vhandle: 0x%08x\n", screen_vhandle);
 		
-	set_screen_attr();
+	//set_screen_attr();
 	
 	/* Application-specific routines */
 	
