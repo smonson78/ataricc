@@ -211,8 +211,6 @@ int16_t appl_init()
 	v.ptsin = addr_in;
 	v.intout = int_out;
 	v.ptsout = addr_out;
-	
-	
 
 	control[4] = 0;
 	global[0] = 0;
@@ -264,7 +262,7 @@ void vq_extnd (int16_t handle, int16_t owflag, int16_t *work_out)
 
 void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out)
 {
-	printf("v_opnwk()\n");
+	//printf("v_opnwk()\n");
 	memcpy(int_in, work_in, sizeof(int16_t) * 11);
 
 	control[0] = 100;
@@ -272,11 +270,11 @@ void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out)
 	control[3] = 11;
 	control[6] = *handle;
 
-	printf("about to call vdi()\n");
-	Cnecin();
+	//printf("about to call vdi()\n");
+	//Cnecin();
 	vdi();
 	printf("Result: 0x%04x\n", int_out[0]);
-	Cnecin();
+	//Cnecin();
 	
 	*handle = control[6];
 	memcpy(work_out, int_out, 45);

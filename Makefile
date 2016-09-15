@@ -3,13 +3,13 @@ CFLAGS=-g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
 LDFLAGS=-lgcc
 
 INSTALL=/home/simon/dev/XSteem/hd
-TARGET=test.tos
+TARGET=TEST.PRG
 LIBGCC=/home/simon/gcc-m68k/lib/gcc/m68k-elf/5.3.0/m68000/libgcc.a
 
 $(TARGET): test.elf
 	@# Strip out .discard section and make .text writable before passing to vlink
 	m68k-elf-objcopy --remove-section=.discard --writable-text test.elf ready.o
-	/home/simon/dev/vlink/vlink ready.o -b ataritos -o test.tos
+	/home/simon/dev/vlink/vlink ready.o -b ataritos -o $(TARGET)
 	@$(RM) ready.o
 	
 test.o: test.c
@@ -28,7 +28,7 @@ info: debug
 	@m68k-elf-objdump -h info.elf
 
 elf: test.elf
-test.elf: crt0.o test.o tos.o libc.o aes.o $(LIBGCC)
+test.elf: crt0.o test.o tos.o libc.o aes.o xbios.o $(LIBGCC)
 	@# Run linker, generate a relocatable object file of the whole project
 	m68k-elf-ld -Tatari.ld --relocatable $^ -o test.elf
 	#m68k-elf-ld -Tatari.ld $^ -o info.elf
@@ -38,4 +38,3 @@ debug: crt0.o test.o tos.o libc.o aes.o $(LIBGCC)
 
 install: $(TARGET)
 	cp --target-directory=$(INSTALL) $(TARGET)
-	

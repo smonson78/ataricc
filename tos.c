@@ -98,7 +98,7 @@ int32_t Mshrink(void *block, int32_t newsize)
 
 int32_t Random()
 {
-	register int32_t val __asm__("d0");
+	  register int32_t val __asm__("d0");
     __asm__ __volatile__
     (
         "move.w #17,-(%%sp)\n\t"
@@ -113,7 +113,7 @@ int32_t Random()
 
 int16_t Getrez()
 {
-	register int16_t val __asm__("d0");
+    register int16_t val __asm__("d0");
     __asm__ __volatile__
     (
         "move.w #4,-(%%sp)\n\t"
