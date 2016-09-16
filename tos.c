@@ -2,6 +2,21 @@
 
 #include "tos.h"
 
+int32_t Cconin()
+{
+	register int32_t val __asm__("d0");
+    __asm__ __volatile__
+    (
+        "move.w #1,-(%%sp)\n\t"
+        "trap #1\n\t"
+        "addq.l #2,%%sp\n\t"
+    : "=r"(val) /* outputs */
+    : /* inputs */
+    : "d1", "d2", "a0", "a1", "a2" /* clobbered regs */
+    );
+    return val;
+}
+
 
 void Cconws(const char* s)
 {
@@ -36,7 +51,7 @@ int32_t Cnecin()
 	register int32_t val __asm__("d0");
     __asm__ __volatile__
     (
-        "move.w #7,-(%%sp)\n\t"
+        "move.w #8,-(%%sp)\n\t"
         "trap #1\n\t"
         "addq.l #2,%%sp\n\t"
     : "=r"(val) /* outputs */

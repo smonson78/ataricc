@@ -3,6 +3,7 @@
 
 #include <libc.h>
 
+
 extern int16_t screen_phandle;
 extern int16_t screen_vhandle;
 
@@ -27,25 +28,27 @@ int16_t open_vwork(int16_t phys_handle)
 
 int main(int argc, char **argv)
 {
-	int app_id;
+	int16_t app_id = appl_init();
 	int16_t gr_wchar, gr_hchar;
 	int16_t gr_wbox, gr_hbox;
+	
+	printf("\033E"); // clear screen
 
-	printf("Started up OK.\n");
-
-	app_id = appl_init();
-	if (app_id < 0) {
+	if (app_id == -1) {
 		Cconws("***> Initialization error.\n");
 		Cconws("Press any key to continue.\n");
-		Cnecin();
+		Cconin();
 		exit(1);
 	}
 
 	printf("Application ID: 0x%08x\n", app_id);
 	
+	// Change mouse into pointer
+	graf_mouse(0, NULL);
+	
 	screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
 	printf("Screen phandle: 0x%08x\n", screen_phandle);
-	Cnecin();
+	//Cconin();
 
 	screen_vhandle = open_vwork(screen_phandle);
 	printf("Screen vhandle: 0x%08x\n", screen_vhandle);
@@ -79,11 +82,13 @@ int main(int argc, char **argv)
 	  printf("Random: 0x%06x\n", Random());
 	  printf("Random: 0x%06x\n", Random());	
 	
-	  Cnecin();
+	  Cconin();
   }
   
+  form_alert(1, "[1][Smonson on ATARI ST][ OK ]");
+  
 	/* End */
-	Cnecin();
+	Cconin();
 	v_clsvwk(screen_vhandle);
 	appl_exit();
   

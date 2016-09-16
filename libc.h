@@ -5,6 +5,7 @@
 
 typedef uint16_t FILE;
 typedef uint32_t size_t;
+#define NULL ((void *)0)
 
 extern FILE *stdout;
 extern void _exit(uint16_t retval);

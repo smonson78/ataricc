@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 // TOS
+int32_t Cconin();
 void Cconws(const char* s);
 void Cconout(const uint16_t ch);
 int32_t Cnecin();

@@ -1,8 +1,8 @@
 CC=m68k-elf-gcc
-CFLAGS=-g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
+CFLAGS=-O3 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
 LDFLAGS=-lgcc
 
-INSTALL=/home/simon/dev/XSteem/hd
+INSTALL=/home/simon/dev/XSteem/hd/C
 TARGET=TEST.PRG
 LIBGCC=/home/simon/gcc-m68k/lib/gcc/m68k-elf/5.3.0/m68000/libgcc.a
 

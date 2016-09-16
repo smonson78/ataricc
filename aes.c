@@ -5,19 +5,20 @@
 static AESPB c;
 static VDIPB v;
 
+// this is the AES pointer block
 int16_t global[15];
-int16_t control[12];
-int16_t int_in[128];
-int16_t int_out[128];
-int16_t addr_in[128];
-int16_t addr_out[128];
+int16_t control[7];
+int16_t int_in[16];
+int16_t int_out[10];
+void *addr_in[8];
+void *addr_out[2];
 
-//int16_t global[15];
-//int16_t control[5];
-//int16_t int_in[16];
-//int16_t int_out[7];
-//int16_t addr_in[2];
-//int16_t addr_out[1];
+// This is the VDI pointer block
+int16_t vdi_control[12];
+int16_t vdi_intin[1024];
+int16_t vdi_intout[512];
+int16_t vdi_ptsin[1024];
+int16_t vdi_ptsout[256];
 
 int16_t screen_phandle;
 int16_t screen_vhandle;
@@ -169,29 +170,29 @@ void set_screen_attr()
 
 void aes()
 {
-    __asm__ __volatile__
-    (
-    	"move.l %0,%%d1\n\t"
-		"move.w #200,%%d0\n\t"
-		"trap #2\n\t"
+  __asm__ __volatile__
+  (
+  	"move.l %0,%%d1\n\t"
+	  "move.w #200,%%d0\n\t"
+	  "trap #2\n\t"
     :
     : "p"(&c)
     : "d0", "d1"
-    );
+  );
 }
 
 
 void vdi()
 {
-    __asm__ __volatile__
-    (
-        "move.l %0,%%d1\n\t"
-        "move.w #115,%%d0\n\t"
-        "trap #2\n\t"
+  __asm__ __volatile__
+  (
+    "move.l %0,%%d1\n\t"
+    "move.w #115,%%d0\n\t"
+    "trap #2\n\t"
     : /* outputs */
     : "p"(&v) /* inputs */
     : "d0", "d1" /* clobbered regs */
-    );
+  );
 }
 
 
@@ -206,19 +207,20 @@ int16_t appl_init()
 	c.cb_padrout = addr_out;
 	
 	// Set up VDIPB
-	v.contrl = control;
-	v.intin = int_in;
-	v.ptsin = addr_in;
-	v.intout = int_out;
-	v.ptsout = addr_out;
+	v.contrl = vdi_control;
+	v.intin = vdi_intin;
+	v.ptsin = vdi_ptsin;
+	v.intout = vdi_intout;
+	v.ptsout = vdi_ptsout;
 
 	control[4] = 0;
-	global[0] = 0;
-	global[2] = 0xffff;
-	int_out[0] = 0xffff;
-	crys_if(10);
 
-	return int_out[0];
+	//global[0] = 0;
+	//global[2] = 0xffff;
+	//int_out[0] = 0xffff;
+
+  //Cconout(' '); // also makes it work
+  return crys_if(10);
 }
 
 int16_t crys_if(int16_t opcode)
@@ -229,19 +231,21 @@ int16_t crys_if(int16_t opcode)
         for (i = 1; i < 4; i++) {
 	        control[i] = ctrl_cnts[opcode - 10][i];
         }
-        
-        printf("Calling AES with:\n");
-        printf("\tc = 0x%p\n", c);
-        printf("\tcontrol[0] = 0x%04x\n", c.cb_pcontrol[0]);
+
+//        printf("Calling AES with:\n"); // makes it work
+//        Cconws("asdsdsa\n"); // makes it work
+//        Cconout(' '); // also makes it work
+/*
+        //printf("\tc = 0x%p\n", c);
+        printf("\tcontrol[0] = %d\n", c.cb_pcontrol[0]);
         printf("\tcontrol[1] = 0x%04x\n", c.cb_pcontrol[1]);
         printf("\tcontrol[2] = 0x%04x\n", c.cb_pcontrol[2]);
         printf("\tcontrol[3] = 0x%04x\n", c.cb_pcontrol[3]);
-        printf("\tcontrol[4] = 0x%04x\n", c.cb_pcontrol[4]);
-       
+*/
         aes();
         
-        printf("\tResult = 0x%04x\n", int_out[0]);
-        Cnecin();
+//        printf("\tResult = 0x%04x\n", int_out[0]);
+//        Cconin();
         return int_out[0];
 }
 
@@ -249,78 +253,91 @@ void vq_extnd (int16_t handle, int16_t owflag, int16_t *work_out)
 {
 	int_in[0] = owflag;
 
-	control[0] = 102;
-	control[1] = 0;
-	control[3] = 1;
-	control[6] = handle;
+	vdi_control[0] = 102;
+	vdi_control[1] = 0;
+	vdi_control[3] = 1;
+	vdi_control[6] = handle;
 
 	vdi();
 
-	memcpy(work_out, int_out, 45);
-	memcpy(work_out + 45, addr_out, 12);
+	memcpy(work_out, vdi_intout, 45);
+	memcpy(work_out + 45, vdi_ptsout, 12);
 }
 
 void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out)
 {
 	//printf("v_opnwk()\n");
-	memcpy(int_in, work_in, sizeof(int16_t) * 11);
+	memcpy(vdi_intin, work_in, sizeof(int16_t) * 11);
 
-	control[0] = 100;
-	control[1] = 0;
-	control[3] = 11;
-	control[6] = *handle;
+	vdi_control[0] = 100;
+	vdi_control[1] = 0;
+	vdi_control[3] = 11;
+	vdi_control[6] = *handle;
 
 	//printf("about to call vdi()\n");
-	//Cnecin();
+	//Cconin();
 	vdi();
-	printf("Result: 0x%04x\n", int_out[0]);
-	//Cnecin();
+	//printf("Result: 0x%04x\n", int_out[0]);
+	//Cconin();
 	
-	*handle = control[6];
-	memcpy(work_out, int_out, 45);
-	memcpy(work_out + 45, addr_out, 12);
+	*handle = vdi_control[6];
+	memcpy(work_out, vdi_intout, 45);
+	memcpy(work_out + 45, vdi_ptsout, 12);
 }
 
 void v_clswk(int16_t handle)
 {
-   control[0] = 2;
-   control[1] = 0;
-   control[3] = 0;
-   control[6] = handle;
+   vdi_control[0] = 2;
+   vdi_control[1] = 0;
+   vdi_control[3] = 0;
+   vdi_control[6] = handle;
 
    vdi();
 }
 
 void v_clsvwk(int16_t handle)
 {
-   control[0] = 101;
-   control[1] = 0;
-   control[3] = 0;
-   control[6] = handle;
+   vdi_control[0] = 101;
+   vdi_control[1] = 0;
+   vdi_control[3] = 0;
+   vdi_control[6] = handle;
 
    vdi();
 }
 
- 	
+int16_t graf_mouse(int16_t gr_monumber, MFORM *gr_mofaddr)
+{
+  int_in[0] = gr_monumber;
+  addr_in[0] = gr_mofaddr;
+  
+  return crys_if(78);
+}
 
 int16_t graf_handle (int16_t *gr_hwchar, int16_t *gr_hhchar,
 	int16_t *gr_hwbox, int16_t *gr_hhbox)
 {
    crys_if(77);
-   printf("* crys_if(77) called\n");
-   Cnecin();
-
+   
    *gr_hwchar = int_out[1];
    *gr_hhchar = int_out[2];
    *gr_hwbox  = int_out[3];
    *gr_hhbox  = int_out[4];
-
+   
    return int_out[0];
 }
 
 int16_t appl_exit()
 {
    return crys_if(19);
+}
+
+ 	
+int16_t form_alert (int16_t fo_adefbttn, const char *fo_astring)
+{
+   int_in[0]  = fo_adefbttn;
+   addr_in[0] = (char *)fo_astring;
+
+   return crys_if(52);
 }
 
 
