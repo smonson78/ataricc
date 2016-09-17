@@ -3,6 +3,13 @@
 
 #include <stdint.h>
 
+extern int16_t global[];
+extern int16_t control[];
+extern int16_t int_in[];
+extern int16_t int_out[];
+extern void *addr_in[];
+extern void *addr_out[];
+
 typedef struct
 {
   int16_t *cb_pcontrol;  /* Pointer to control array */
@@ -53,5 +60,35 @@ int16_t form_alert (int16_t fo_adefbttn, const char *fo_astring);
 void v_clswk(int16_t handle);
 void v_clsvwk(int16_t handle);
 void set_screen_attr();
+
+// event
+int16_t evnt_mesag(int16_t *msg);
+int16_t evnt_multi (int16_t ev_mflags,  int16_t ev_mbclicks,
+    int16_t ev_mbmask,  int16_t ev_mbstate,
+    int16_t ev_mm1flags, int16_t ev_mm1x,
+    int16_t ev_mm1y, int16_t ev_mm1width,
+    int16_t ev_mm1height, int16_t ev_mm2flags,
+    int16_t ev_mm2x, int16_t ev_mm2y,
+    int16_t ev_mm2width, int16_t ev_mm2height,
+    int16_t *ev_mmgpbuff, int16_t ev_mtlocount,
+    int16_t ev_mthicount, int16_t *ev_mmox,
+    int16_t *ev_mmoy, int16_t *ev_mmbutton,
+    int16_t *ev_mmokstate, int16_t *ev_mkreturn,
+    int16_t *ev_mbreturn);
+int16_t wind_set(int16_t wi_shandle, int16_t wi_sfield,
+    int16_t wi_sw1, int16_t wi_sw2, int16_t wi_sw3, int16_t wi_sw4);
+
+// vdi
+void vr_recfl(int16_t handle, int16_t *pxyarray);
+void v_bar(int16_t handle, int16_t *pxyarray);
+int16_t vswr_mode(int16_t handle, int16_t mode);
+int16_t wind_calc(int16_t wi_ctype, int16_t wi_ckind,
+    int16_t wi_cinx, int16_t wi_ciny,
+    int16_t wi_cinw, int16_t wi_cinh,
+    int16_t *coutx, int16_t *couty,
+    int16_t *coutw, int16_t *couth);
+int16_t wind_get(int16_t wi_ghandle, int16_t wi_gfield,
+    int16_t *wi_gw1, int16_t *wi_gw2, int16_t *wi_gw3, int16_t *wi_gw4);
+
 
 #endif

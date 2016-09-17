@@ -232,20 +232,7 @@ int16_t crys_if(int16_t opcode)
 	        control[i] = ctrl_cnts[opcode - 10][i];
         }
 
-//        printf("Calling AES with:\n"); // makes it work
-//        Cconws("asdsdsa\n"); // makes it work
-//        Cconout(' '); // also makes it work
-/*
-        //printf("\tc = 0x%p\n", c);
-        printf("\tcontrol[0] = %d\n", c.cb_pcontrol[0]);
-        printf("\tcontrol[1] = 0x%04x\n", c.cb_pcontrol[1]);
-        printf("\tcontrol[2] = 0x%04x\n", c.cb_pcontrol[2]);
-        printf("\tcontrol[3] = 0x%04x\n", c.cb_pcontrol[3]);
-*/
         aes();
-        
-//        printf("\tResult = 0x%04x\n", int_out[0]);
-//        Cconin();
         return int_out[0];
 }
 
@@ -313,15 +300,15 @@ int16_t graf_mouse(int16_t gr_monumber, MFORM *gr_mofaddr)
   return crys_if(78);
 }
 
-int16_t graf_handle (int16_t *gr_hwchar, int16_t *gr_hhchar,
+int16_t graf_handle(int16_t *gr_hwchar, int16_t *gr_hhchar,
 	int16_t *gr_hwbox, int16_t *gr_hhbox)
 {
    crys_if(77);
    
    *gr_hwchar = int_out[1];
    *gr_hhchar = int_out[2];
-   *gr_hwbox  = int_out[3];
-   *gr_hhbox  = int_out[4];
+   *gr_hwbox = int_out[3];
+   *gr_hhbox = int_out[4];
    
    return int_out[0];
 }
@@ -331,16 +318,159 @@ int16_t appl_exit()
    return crys_if(19);
 }
 
- 	
-int16_t form_alert (int16_t fo_adefbttn, const char *fo_astring)
+int16_t form_alert(int16_t fo_adefbttn, const char *fo_astring)
 {
-   int_in[0]  = fo_adefbttn;
-   addr_in[0] = (char *)fo_astring;
+  int_in[0]  = fo_adefbttn;
+  addr_in[0] = (char *)fo_astring;
 
-   return crys_if(52);
+  return crys_if(52);
 }
 
+int16_t evnt_mesag(int16_t *msg)
+{
+   addr_in[0] = msg;
+   return crys_if(23);
+}
 
+int16_t evnt_multi (int16_t ev_mflags,  int16_t ev_mbclicks,
+  int16_t ev_mbmask,  int16_t ev_mbstate,
+  int16_t ev_mm1flags, int16_t ev_mm1x,
+  int16_t ev_mm1y, int16_t ev_mm1width,
+  int16_t ev_mm1height, int16_t ev_mm2flags,
+  int16_t ev_mm2x, int16_t ev_mm2y,
+  int16_t ev_mm2width, int16_t ev_mm2height,
+  int16_t *ev_mmgpbuff, int16_t ev_mtlocount,
+  int16_t ev_mthicount, int16_t *ev_mmox,
+  int16_t *ev_mmoy, int16_t *ev_mmbutton,
+  int16_t *ev_mmokstate, int16_t *ev_mkreturn,
+  int16_t *ev_mbreturn)
+{
+  int_in[0] = ev_mflags;
+  int_in[1] = ev_mbclicks;
+  int_in[2] = ev_mbmask;
+  int_in[3] = ev_mbstate;
+  int_in[4] = ev_mm1flags;
+  int_in[5] = ev_mm1x;
+  int_in[6] = ev_mm1y;
+  int_in[7] = ev_mm1width;
+  int_in[8] = ev_mm1height;
+  int_in[9] = ev_mm2flags;
+  int_in[10] = ev_mm2x;
+  int_in[11] = ev_mm2y;
+  int_in[12] = ev_mm2width;
+  int_in[13] = ev_mm2height;
+  int_in[14] = ev_mtlocount;
+  int_in[15] = ev_mthicount;
+  addr_in[0] = ev_mmgpbuff;
+
+  crys_if(25);
+
+  *ev_mmox = int_out[1];
+  *ev_mmoy = int_out[2];
+  *ev_mmbutton = int_out[3];
+  *ev_mmokstate = int_out[4];
+  *ev_mkreturn = int_out[5];
+  *ev_mbreturn = int_out[6];
+
+  return vdi_intout[0];
+}
+
+int16_t wind_set(int16_t wi_shandle, int16_t wi_sfield,
+    int16_t wi_sw1, int16_t wi_sw2, int16_t wi_sw3, int16_t wi_sw4)
+{
+   int_in[0] = wi_shandle;
+   int_in[1] = wi_sfield;
+   int_in[2] = wi_sw1;
+   int_in[3] = wi_sw2;
+   int_in[4] = wi_sw3;
+   int_in[5] = wi_sw4;
+
+   return crys_if(105);
+}
+
+// vdi
+ 	
+
+void vr_recfl(int16_t handle, int16_t *pxyarray)
+{
+   //ptsin[0..3] = pxyarray[0..3];
+   memcpy(vdi_ptsin, pxyarray, sizeof(int16_t) * 4);
+
+   vdi_control[0] = 114;
+   vdi_control[1] = 2;
+   vdi_control[3] = 0;
+   vdi_control[6] = handle;
+
+   vdi();
+}
+
+void v_bar(int16_t handle, int16_t *pxyarray)
+{
+   memcpy(vdi_ptsin, pxyarray, sizeof(int16_t) * 4);
+   vdi_control[0] = 11;
+   vdi_control[1] = 2;
+   vdi_control[3] = 0;
+   vdi_control[5] = 1;
+   vdi_control[6] = handle;
+
+   vdi();
+}
+ 	
+int16_t vswr_mode(int16_t handle, int16_t mode)
+{
+   vdi_intin[0] = mode;
+
+   vdi_control[0] = 32;
+   vdi_control[1] = 0;
+   vdi_control[3] = 1;
+   vdi_control[6] = handle;
+
+   vdi();
+
+   return vdi_intout[0];
+}
+
+int16_t wind_calc(int16_t wi_ctype, int16_t wi_ckind,
+    int16_t wi_cinx, int16_t wi_ciny,
+    int16_t wi_cinw, int16_t wi_cinh,
+    int16_t *coutx, int16_t *couty,
+    int16_t *coutw, int16_t *couth)
+{
+   int_in[0]  = wi_ctype;
+   int_in[1]  = wi_ckind;
+   int_in[2]  = wi_cinx;
+   int_in[3]  = wi_ciny;
+   int_in[4]  = wi_cinw;
+   int_in[5]  = wi_cinh;
+
+   crys_if(108);
+
+   *coutx = int_out[1];
+   *couty = int_out[2];
+   *coutw = int_out[3];
+   *couth = int_out[4];
+
+   return int_out[0];
+}
+
+ 	
+
+int16_t wind_get(int16_t wi_ghandle, int16_t wi_gfield,
+    int16_t *wi_gw1, int16_t *wi_gw2,
+    int16_t *wi_gw3, int16_t *wi_gw4)
+{
+   int_in[0]  = wi_ghandle;
+   int_in[1]  = wi_gfield;
+
+   crys_if(104);
+
+   *wi_gw1 = int_out[1];
+   *wi_gw2 = int_out[2];
+   *wi_gw3 = int_out[3];
+   *wi_gw4 = int_out[4];
+
+   return int_out[0];
+}
 
 
 
