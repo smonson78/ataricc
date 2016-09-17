@@ -1,12 +1,59 @@
+extern "C" {
 #include <tos.h>
 #include <aes.h>
 #include <aes_window.h>
 #include <libc.h>
+}
 
 extern int16_t screen_phandle;
 extern int16_t screen_vhandle;
 
-int16_t window; // handle
+class Window {
+    public:
+    int16_t handle;
+    
+    Window() {
+        handle = wind_create(0x2F, 50, 50, 640, 400);
+        //printf("Created window %d\n", (int)handle);
+
+    }
+    
+    void settitle(const char *title) {
+	    wind_set(handle, 2, 
+	        (int32_t)title >> 16, (int32_t)title & 0xFFFF, 0, 0);
+    }
+    
+    void open() {
+        wind_open(handle, 200, 100, 200, 100);
+        //printf("Opened window %d\n", (int)handle);
+    }
+    
+    void redraw() {
+        //printf("Redrawing window %d\n", (int)handle);
+
+        int16_t rect[4];
+
+        // Get extent of visible area
+        wind_get(handle, 4, // WF_WORKXYWH
+            &rect[0], &rect[1], &rect[2], &rect[3]);
+
+        // Set draw mode=REPLACE
+        vswr_mode(handle, 1);
+        
+        // Calculate new x,y,w,h from rect corners
+        int16_t rect2[4];
+        rect2[0] = rect[0];
+        rect2[1] = rect[1];
+        rect2[2] = rect[0] + rect[2] - 1;
+        rect2[3] = rect[1] + rect[3] - 1;
+        
+        // fill
+    	vswr_mode(handle, 1);
+        vr_recfl(screen_vhandle, rect2);
+    }
+};
+
+//int16_t window; // handle
 
 int16_t open_vwork(int16_t phys_handle)
 {
@@ -24,7 +71,7 @@ int16_t open_vwork(int16_t phys_handle)
 	return new_handle;
 }
 
-void event_handler()
+void event_handler(Window *simon)
 {
 	int16_t quit = 0;
 	int16_t msg[8];
@@ -36,7 +83,7 @@ void event_handler()
         
         switch (msg[0]) {
         case 22: // WM_CLOSED
-            if (msg[3] == window)
+            //if (msg[3] == window)
                 quit = 1;
             break;
         case 23: // WM_FULLED
@@ -46,14 +93,18 @@ void event_handler()
 
             wind_set(msg[3], 5/*WF_CURRXYWH*/,
                 rect[0], rect[1], rect[2], rect[3]);
+            simon->redraw();
             break;
         case 28: // WM_MOVED
             wind_set(msg[3], 5/*WF_CURRXYWH*/,
                 msg[4], msg[5], msg[6], msg[7]);
+            simon->redraw();
             break;
         case 27: // WM_SIZED
             wind_set(msg[3], 5/*WF_CURRXYWH*/,
                 msg[4], msg[5], msg[6], msg[7]);
+                
+                /*
 	            wind_get(window, 4, &rect[0], &rect[1], &rect[2], &rect[3]);
 	            vswr_mode(window, 1);
 	            int16_t rect2[4];
@@ -63,6 +114,8 @@ void event_handler()
                 rect2[3] = rect[1] + rect[3] - 1;
                 
 	            vr_recfl(screen_vhandle, rect2);
+	            */
+	        simon->redraw();
 
             break;
         }
@@ -83,39 +136,32 @@ int main(int argc, char **argv)
 		Cconin();
 		exit(1);
 	}
-
-	//printf("Application ID: 0x%08x\n", app_id);
 	
 	// Change mouse into pointer
-	graf_mouse(0, NULL);
+	graf_mouse(0, (MFORM*)NULL);
 	
 	screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
-	//printf("Screen phandle: 0x%08x\n", screen_phandle);
 	screen_vhandle = open_vwork(screen_phandle);
-	//printf("Screen vhandle: 0x%08x\n", screen_vhandle);
-		
-	//set_screen_attr();
-	//printf("Resolution: %d\n", Getrez());
-	//printf("Is the screen at... 0x%08x?\n",
-	//  *((uint8_t *)0x80000));
 	
-	window = wind_create(0x2F, 50, 50, 640, 400);
-	wind_open(window, 50, 50, 200, 100);
-    int16_t rect[4];
-    wind_get(window, 4, &rect[0], &rect[1], &rect[2], &rect[3]);
-    vswr_mode(window, 1);
-    int16_t rect2[4];
-    rect2[0] = rect[0];
-    rect2[1] = rect[1];
-    rect2[2] = rect[0] + rect[2] - 1;
-    rect2[3] = rect[1] + rect[3] - 1;
+	Window simon;
+	simon.settitle("Smonson");
+	simon.open();
+	simon.redraw();
+	
+//	window = wind_create(0x2F, 50, 50, 640, 400);
+//	wind_open(window, 50, 50, 200, 100);
+    //int16_t rect[4];
+    //wind_get(window, 4, &rect[0], &rect[1], &rect[2], &rect[3]);
+    //vswr_mode(window, 1);
+    //int16_t rect2[4];
+    //rect2[0] = rect[0];
+    //rect2[1] = rect[1];
+    //rect2[2] = rect[0] + rect[2] - 1;
+    //rect2[3] = rect[1] + rect[3] - 1;
 
-	vswr_mode(window, 1);
-	vr_recfl(screen_vhandle, rect2);
-	char *title = "SMONSON";
-	wind_set(window, 2, (int32_t)title >> 16, (int32_t)title & 0xFFFF, 0, 0);
+	//vr_recfl(screen_vhandle, rect2);
 
-    event_handler();
+    event_handler(&simon);
 	
 	if (0) 
 	{
@@ -134,7 +180,7 @@ int main(int argc, char **argv)
 	  printf("Hello %% Atari 0x%x.\n", 0x12345678);
 
 	  printf("Largest allocatable block: %ld bytes\n", (long int)Malloc(-1));
-	  char *buf = Malloc(32 * 1024);
+	  char *buf = (char *)Malloc(32 * 1024);
 	  printf("Largest allocatable block: %ld bytes\n", (long int)Malloc(-1));
 	  Mfree(buf);
 	  printf("Largest allocatable block: %ld bytes\n", (long int)Malloc(-1));

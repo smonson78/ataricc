@@ -1,5 +1,7 @@
 CC=m68k-elf-gcc
-CFLAGS=-O3 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
+CXX=m68k-elf-g++
+CFLAGS=-O2 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
+CXXFLAGS=-O2 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
 LDFLAGS=-lgcc
 
 INSTALL=/home/simon/dev/XSteem/hd/C
@@ -13,7 +15,7 @@ $(TARGET): test.elf
 	/home/simon/dev/vlink/vlink ready.o -b ataritos -o $(TARGET)
 	@$(RM) ready.o
 	
-test.o: test.c
+test.o: test.cpp
 crt0.o: crt0.c
 
 clean:
