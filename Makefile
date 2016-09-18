@@ -1,7 +1,9 @@
 CC=m68k-elf-gcc
 CXX=m68k-elf-g++
+OBJCOPY=m68k-elf-objcopy
+
 CFLAGS=-O2 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
-CXXFLAGS=-O2 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
+CXXFLAGS=-g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti
 LDFLAGS=-lgcc
 
 INSTALL=/home/simon/dev/XSteem/hd/C
@@ -11,7 +13,9 @@ TOSLIBS=tos.o aes.o xbios.o aes_window.o
 
 $(TARGET): test.elf
 	@# Strip out .discard section and make .text writable before passing to vlink
-	m68k-elf-objcopy --remove-section=.discard --writable-text test.elf ready.o
+	@# .group section is just there for grouping C++ class methods,
+	@# I can't find much information about it.
+	$(OBJCOPY) --remove-section=.discard --remove-section=.group --writable-text test.elf ready.o
 	/home/simon/dev/vlink/vlink ready.o -b ataritos -o $(TARGET)
 	@$(RM) ready.o
 	
@@ -36,7 +40,7 @@ test.elf: crt0.o test.o libc.o $(TOSLIBS) $(LIBGCC)
 	m68k-elf-ld -Tatari.ld --relocatable $^ -o test.elf
 	#m68k-elf-ld -Tatari.ld $^ -o info.elf
 
-debug: crt0.o test.o tos.o libc.o aes.o $(LIBGCC)
+debug: crt0.o test.o libc.o $(TOSLIBS) $(LIBGCC)
 	m68k-elf-ld -Tdebug.ld $^ -o info.elf
 
 install: $(TARGET)

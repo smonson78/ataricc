@@ -4,6 +4,7 @@ SECTIONS {
 		crt0.o (.entry)
 		*(.text.startup)
 		*(.text)
+		*(.text.*)
 		PROVIDE(_etext = .);
 	}
 	.data : {

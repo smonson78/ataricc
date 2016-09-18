@@ -2,8 +2,10 @@ SECTIONS {
 	. = 0;
 	.text : {
 		crt0.o (.entry)
-		*(.text.startup)
+		/* Normal .text */
 		*(.text)
+		/* C++ static methods seem to go into their own segment */
+		*(.text.*)
 		PROVIDE(_etext = .);
 	}
 	.data : {

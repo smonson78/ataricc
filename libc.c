@@ -184,3 +184,25 @@ void exit(uint16_t retval)
 	_exit(retval);
 }
 
+
+void malloc() {
+    printf("malloc called\n");
+}
+
+void free (void *m) {
+    printf("free called\n");
+}
+
+void abort() {
+    printf("abort called\n");
+}
+
+void memset(void *src, int c, uint32_t size) {
+    printf("memset called\n");
+}
+
+int strlen(const char *src) {
+    printf("strlen called\n");
+    return 0;
+}
+
