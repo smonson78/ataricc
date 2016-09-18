@@ -79,9 +79,12 @@ int16_t wind_set(int16_t wi_shandle, int16_t wi_sfield,
     int16_t wi_sw1, int16_t wi_sw2, int16_t wi_sw3, int16_t wi_sw4);
 
 // vdi
+int16_t vsf_color(int16_t handle, int16_t color_index);
 void vr_recfl(int16_t handle, int16_t *pxyarray);
 void v_bar(int16_t handle, int16_t *pxyarray);
 int16_t vswr_mode(int16_t handle, int16_t mode);
+
+
 int16_t wind_calc(int16_t wi_ctype, int16_t wi_ckind,
     int16_t wi_cinx, int16_t wi_ciny,
     int16_t wi_cinw, int16_t wi_cinh,

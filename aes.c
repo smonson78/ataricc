@@ -453,23 +453,38 @@ int16_t wind_calc(int16_t wi_ctype, int16_t wi_ckind,
    return int_out[0];
 }
 
- 	
-
 int16_t wind_get(int16_t wi_ghandle, int16_t wi_gfield,
     int16_t *wi_gw1, int16_t *wi_gw2,
     int16_t *wi_gw3, int16_t *wi_gw4)
 {
-   int_in[0]  = wi_ghandle;
-   int_in[1]  = wi_gfield;
+    int_in[0]  = wi_ghandle;
+    int_in[1]  = wi_gfield;
 
-   crys_if(104);
+    crys_if(104);
 
-   *wi_gw1 = int_out[1];
-   *wi_gw2 = int_out[2];
-   *wi_gw3 = int_out[3];
-   *wi_gw4 = int_out[4];
+    *wi_gw1 = int_out[1];
+    *wi_gw2 = int_out[2];
+    *wi_gw3 = int_out[3];
+    *wi_gw4 = int_out[4];
 
-   return int_out[0];
+    return int_out[0];
+}
+
+// Set fill colour
+int16_t vsf_color(int16_t handle, int16_t color_index)
+{
+    vdi_intin[0] = color_index;
+
+    vdi_control[0] = 25;
+    vdi_control[1] = 0;
+    //vdi_control[2] = 0; // needed or not?
+    vdi_control[3] = 1;
+    //vdi_control[4] = 1; // needed?
+    vdi_control[6] = handle;
+
+    vdi();
+
+    return vdi_intout[0];
 }
 
 

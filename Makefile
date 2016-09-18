@@ -10,6 +10,8 @@ INSTALL=/home/simon/dev/XSteem/hd/C
 TARGET=TEST.PRG
 LIBGCC=/home/simon/gcc-m68k/lib/gcc/m68k-elf/5.3.0/m68000/libgcc.a
 TOSLIBS=tos.o aes.o xbios.o aes_window.o
+APPLIBS=app_app.o app_window.o
+ALLLIBS=crt0.o libc.o $(TOSLIBS) $(APPLIBS) $(LIBGCC)
 
 $(TARGET): test.elf
 	@# Strip out .discard section and make .text writable before passing to vlink
@@ -33,11 +35,11 @@ info: debug
 	@m68k-elf-objdump -h info.elf
 
 elf: test.elf
-test.elf: crt0.o test.o libc.o $(TOSLIBS) $(LIBGCC)
+test.elf: test.o $(ALLLIBS)
 	@# Run linker, generate a relocatable object file of the whole project
 	m68k-elf-ld -Tatari.ld --relocatable $^ -o test.elf
 
-debug: crt0.o test.o libc.o $(TOSLIBS) $(LIBGCC)
+debug: test.o $(ALLLIBS)
 	m68k-elf-ld -Tdebug.ld $^ -o info.elf
 
 install: $(TARGET)
