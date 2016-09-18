@@ -197,8 +197,10 @@ void abort() {
     printf("abort called\n");
 }
 
-void memset(void *src, int c, uint32_t size) {
-    printf("memset called\n");
+void memset(void *dest, int c, size_t bytes) {
+    while (bytes--) {
+        *((char *)dest++) = (char)c;
+    }
 }
 
 int strlen(const char *src) {

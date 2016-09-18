@@ -13,6 +13,7 @@ extern void _exit(uint16_t retval);
 int printf(const char *format, ...);
 int puts(const char *s);
 void memcpy(void *dest, void *src, size_t bytes);
+void memset(void *dest, int c, size_t bytes);
 void exit(uint16_t retval);
 int16_t isdigit(char c);
 
