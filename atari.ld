@@ -22,7 +22,8 @@ SECTIONS {
 	. = . + 0x4000;
 	stack = ALIGN(2);
 	
-	.discard : {
+	/DISCARD/ : {
+		*(.group)
 		*(.comment)
 		*(.debug*)
 	}
