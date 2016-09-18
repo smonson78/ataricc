@@ -15,17 +15,19 @@ void Window::redraw(int16_t vhandle)
     wind_get(handle, 4, // WF_WORKXYWH
         &rect[0], &rect[1], &rect[2], &rect[3]);
 
-    // Set draw mode=REPLACE
-    vswr_mode(vhandle, 1);
-    
     // Calculate new x,y,w,h from rect corners
     int16_t rect2[4];
     rect2[0] = rect[0];
     rect2[1] = rect[1];
     rect2[2] = rect[0] + rect[2] - 1;
     rect2[3] = rect[1] + rect[3] - 1;
-    
-	vsf_color(vhandle, 0); // colour 0
+
+    // Set draw mode=REPLACE
+    vswr_mode(vhandle, 1);
+  
+    // Colour 0
+	vsf_color(vhandle, 0);
+	
     vr_recfl(vhandle, rect2);
 }
 

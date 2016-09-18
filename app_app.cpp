@@ -32,6 +32,7 @@ void Application::event_handler()
         Window *w;
         switch (msg[0]) {
         case 20:
+        case 21:
         case 22:
         case 23:
         case 28:
@@ -42,7 +43,10 @@ void Application::event_handler()
         switch (msg[0]) {
         case 20: // WM_REDRAW
             w->redraw(screen_vhandle);
-            break;        
+            break;
+        case 21: // WM_TOPPED
+            wind_set(msg[3], 10 /* WF_TOP */, 0, 0, 0, 0);
+            break;
         case 22: // WM_CLOSED
             //if (msg[3] == window)
             quit = 1;
