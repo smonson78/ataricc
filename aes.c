@@ -436,12 +436,12 @@ int16_t wind_calc(int16_t wi_ctype, int16_t wi_ckind,
     int16_t *coutx, int16_t *couty,
     int16_t *coutw, int16_t *couth)
 {
-   int_in[0]  = wi_ctype;
-   int_in[1]  = wi_ckind;
-   int_in[2]  = wi_cinx;
-   int_in[3]  = wi_ciny;
-   int_in[4]  = wi_cinw;
-   int_in[5]  = wi_cinh;
+   int_in[0] = wi_ctype;
+   int_in[1] = wi_ckind;
+   int_in[2] = wi_cinx;
+   int_in[3] = wi_ciny;
+   int_in[4] = wi_cinw;
+   int_in[5] = wi_cinh;
 
    crys_if(108);
 
@@ -477,9 +477,7 @@ int16_t vsf_color(int16_t handle, int16_t color_index)
 
     vdi_control[0] = 25;
     vdi_control[1] = 0;
-    //vdi_control[2] = 0; // needed or not?
     vdi_control[3] = 1;
-    //vdi_control[4] = 1; // needed?
     vdi_control[6] = handle;
 
     vdi();
@@ -487,6 +485,39 @@ int16_t vsf_color(int16_t handle, int16_t color_index)
     return vdi_intout[0];
 }
 
+int16_t vsf_interior(int16_t handle, int16_t style)
+{
+   vdi_intin[0] = style;
+
+   vdi_control[0] = 23;
+   vdi_control[1] = 0;
+   vdi_control[3] = 1;
+   vdi_control[6] = handle;
+
+   vdi();
+
+   return vdi_intout[0];
+}
+
+// Set clipping rectangle
+void vs_clip(int16_t handle, int16_t clip_flag, int16_t *pxyarray)
+{
+    vdi_intin[0] = clip_flag;
+    memcpy(vdi_ptsin, pxyarray, sizeof(int16_t) * 4);
+
+    vdi_control[0] = 129;
+    vdi_control[1] = 2;
+    vdi_control[3] = 1;
+    vdi_control[6] = handle;
+
+    vdi();
+}
+
+int16_t wind_update(int16_t wi_ubegend)
+{
+    int_in[0] = wi_ubegend;
+    return crys_if(107);
+}
 
 
 #endif

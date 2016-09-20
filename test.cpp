@@ -13,14 +13,16 @@ int main(int argc, char **argv)
 	
 	Window simon;
 	simon.settitle("Smonson");
+	simon.size(300, 50, 200, 150);
 	app.add_window(&simon);
 
 	Window simon2;
 	simon2.settitle("Not-smonson");
+	simon2.size(400, 80, 200, 150);
 	app.add_window(&simon2);
 
-	simon.open();
 	simon2.open();
+	simon.open();
 
     // Main loop	
     app.event_handler();

@@ -113,7 +113,13 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				width = 8;
 				fill = '0';
 				break;
-
+				
+		    case 's':
+		        // FIXME: this has to skip the 'temp' stuff
+		        Cconws(va_arg(arg, const char *));
+		        length = 0;
+                break;
+                
 			default:
 				/* It's an error! */
 				continue;

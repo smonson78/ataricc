@@ -8,6 +8,7 @@ Window *Application::find_window_by_handle(int16_t h)
             return windows[i];
         }
     }
+    form_alert(1, "[1][Crapped out][ OK ]");
     return (Window *)NULL;
 }
 
@@ -15,55 +16,47 @@ void Application::event_handler()
 {
     int16_t quit = 0;
     int16_t msg[8];
-    int16_t rect[4];
-    
-    // (Re)draw contents of all open windows
-    for (int16_t i = 0; i < MAX_WINDOWS; i++) {
-        if (windows[i]) {
-            windows[i]->redraw(screen_vhandle);
-        }
-    }
     
     while (!quit) {
 
         evnt_mesag(msg);
+        Event e = (Event)msg[0];
         
         // Find the window that owns the event
         Window *w;
-        switch (msg[0]) {
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 28:
-        case 27:
+        switch (e) {
+        case WM_REDRAW:
+        case WM_NEWTOP:
+        case WM_TOPPED:
+        case WM_FULLED:
+        case WM_SIZED:
+        case WM_MOVED:
             w = find_window_by_handle(msg[3]);
+            break;
+        default:
+            break;
         }
         
-        switch (msg[0]) {
-        case 20: // WM_REDRAW
-            w->redraw(screen_vhandle);
+        switch (e) {
+        case WM_REDRAW:
+            w->redraw(screen_vhandle,
+                msg[4], msg[5], msg[6], msg[7]);
             break;
-        case 21: // WM_TOPPED
-            wind_set(msg[3], 10 /* WF_TOP */, 0, 0, 0, 0);
+        case WM_NEWTOP:
+        case WM_TOPPED:
+            w->topped();
             break;
-        case 22: // WM_CLOSED
-            //if (msg[3] == window)
-            quit = 1;
+        case WM_CLOSED:
+            quit = 1; // any window closed - quit
             break;
-        case 23: // WM_FULLED
-            // get size of widow 0 (desktop)
-            wind_get(0, 4, &rect[0], &rect[1], &rect[2], &rect[3]);
-            w->size(rect[0], rect[1], rect[2], rect[3]);
-            w->redraw(screen_vhandle);
+        case WM_FULLED:
+            w->fulled();
             break;
-        case 28: // WM_MOVED
+        case WM_SIZED:
             w->size(msg[4], msg[5], msg[6], msg[7]);
-            w->redraw(screen_vhandle);
             break;
-        case 27: // WM_SIZED
+        case WM_MOVED:
             w->size(msg[4], msg[5], msg[6], msg[7]);
-            w->redraw(screen_vhandle);
             break;
         }
     }
