@@ -1,6 +1,32 @@
 #include "app_app.h"
 #include "app_window.h"
 
+Application::Application() {
+
+    // Clear window list
+    for (int16_t i = 0; i < MAX_WINDOWS; i++)
+        windows[i] = (Window *)NULL;
+    
+    app_id = appl_init();
+    if (app_id == -1) {
+	    Cconws("*** Initialization error.\n");
+	    Cconws("Press any key to continue.\n");
+	    Cconin();
+	    exit(1);
+    }
+    
+    // Change mouse from busy-bee into pointer
+    graf_mouse(0, (MFORM*)NULL);
+
+    screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
+    screen_vhandle = open_vwork(screen_phandle);
+}
+
+Application::~Application() {
+    v_clsvwk(screen_vhandle);
+    appl_exit();
+}
+
 Window *Application::find_window_by_handle(int16_t h)
 {
     for (uint16_t i = 0; i < MAX_WINDOWS; i++) {
@@ -20,7 +46,7 @@ void Application::event_handler()
     while (!quit) {
 
         evnt_mesag(msg);
-        Event e = (Event)msg[0];
+        WM_Event e = (WM_Event)msg[0];
         
         // Find the window that owns the event
         Window *w;
@@ -61,4 +87,33 @@ void Application::event_handler()
         }
     }
 }
+
+int16_t Application::open_vwork(int16_t phys_handle)
+{
+    int16_t work_in[11];
+    int16_t work_out[57];
+    int16_t new_handle;
+    int16_t i;
+
+    for (i = 0; i < 10; i++) {
+	    work_in[i] = 1;
+    }
+    work_in[10] = 2;
+    new_handle = phys_handle;
+    v_opnvwk(work_in, &new_handle, work_out);
+    return new_handle;
+}
+
+void Application::add_window(Window *w) {
+    // Keep track of the given window
+    for (int16_t i = 0; i < MAX_WINDOWS; i++) {
+        if (!windows[i]) {
+            windows[i] = w;
+            return;
+        }
+    }
+    
+    // FIXME: handle error
+}
+
 

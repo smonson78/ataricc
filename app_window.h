@@ -26,16 +26,14 @@ class Window {
     
     void settitle(const char *t) {
         title = t;
-	    wind_set(handle, 2, 
+	    wind_set(handle, WF_NAME, 
 	        (int32_t)t >> 16, (int32_t)t & 0xFFFF, 0, 0);
     }
     
     void open() {
         update();
-        //graf_mouse(256 /* M_OFF */, (MFORM *)NULL);
         wind_open(handle, dimensions[0], dimensions[1], 
             dimensions[2], dimensions[3]);
-        //graf_mouse(257 /* M_ON */, (MFORM *)NULL);
         isopen = true;
     }
     
@@ -47,6 +45,5 @@ class Window {
     void topped();
     void fulled();
 };
-
 
 #endif

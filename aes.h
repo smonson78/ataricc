@@ -12,7 +12,7 @@ typedef enum {
     WM_SIZED = 27,
     WM_MOVED,
     WM_NEWTOP
-} Event;
+} WM_Event;
 
 extern int16_t global[];
 extern int16_t control[];
@@ -87,12 +87,6 @@ int16_t evnt_multi (int16_t ev_mflags,  int16_t ev_mbclicks,
     int16_t *ev_mmokstate, int16_t *ev_mkreturn,
     int16_t *ev_mbreturn);
 
-// window func
-int16_t wind_set(int16_t wi_shandle, int16_t wi_sfield,
-    int16_t wi_sw1, int16_t wi_sw2, int16_t wi_sw3, int16_t wi_sw4);
-int16_t wind_update(int16_t wi_ubegend);
-
-
 // vdi
 int16_t vsf_color(int16_t handle, int16_t color_index);
 void vr_recfl(int16_t handle, int16_t *pxyarray);
@@ -101,13 +95,6 @@ int16_t vswr_mode(int16_t handle, int16_t mode);
 int16_t vsf_interior(int16_t handle, int16_t style);
 
 
-int16_t wind_calc(int16_t wi_ctype, int16_t wi_ckind,
-    int16_t wi_cinx, int16_t wi_ciny,
-    int16_t wi_cinw, int16_t wi_cinh,
-    int16_t *coutx, int16_t *couty,
-    int16_t *coutw, int16_t *couth);
-int16_t wind_get(int16_t wi_ghandle, int16_t wi_gfield,
-    int16_t *wi_gw1, int16_t *wi_gw2, int16_t *wi_gw3, int16_t *wi_gw4);
 void vs_clip(int16_t handle, int16_t clip_flag, int16_t *pxyarray);
 
 

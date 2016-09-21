@@ -26,20 +26,12 @@ void Window::size(int16_t x, int16_t y, int16_t w, int16_t h) {
     if (isopen) {
         //graf_mouse(256 /* M_OFF */, (MFORM *)NULL);
         //wind_update(1);
-        wind_set(handle, 5 /*WF_CURRXYWH*/, x, y, w, h);
+        wind_set(handle, WF_CURRXYWH, x, y, w, h);
         //wind_update(0);
         //graf_mouse(257 /* M_ON */, (MFORM *)NULL);
     }
 
 }
-
-// This method is totally unneccessary.
-//void Window::redraw(int16_t vhandle) 
-//{
-//    if (isopen) 
-//        // Redraw entire window contents
-//        redraw(vhandle, visible[0], visible[1], visible[2], visible[3]);
-//}
 
 int16_t min(int16_t a, int16_t b)
 {
@@ -57,7 +49,7 @@ int16_t max(int16_t a, int16_t b)
 
 void intersect_xywh(int16_t *dst, int16_t *src)
 {
-    int16_t x1, w, y1, h;
+    int16_t x1, y1, w, h;
 
     // horizontal
     if (dst[0] < src[0]) {
@@ -98,9 +90,6 @@ void intersect_xywh(int16_t *dst, int16_t *src)
 // Redraw only part of the window contents
 void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h) 
 {
-    //int16_t rect[4];
-    int16_t temp[4];
-
     // Disable updates
     graf_mouse(256 /* M_OFF */, (MFORM *)NULL);
     wind_update(1);
@@ -121,41 +110,33 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
     cliprect[2] = w;
     cliprect[3] = h;
     
-    // limit only to redrawing inside the window
-    intersect_xywh(cliprect, visible);
-
     // Get first rectangle
     int16_t r[4];
-    wind_get(handle, 11 /* WF_FIRSTXYWH */, &r[0], &r[1], &r[2], &r[3]);
-
-    // Limit to only the visible and changed area
-    intersect_xywh(r, cliprect);
+    wind_get(handle, WF_FIRSTXYWH, &r[0], &r[1], &r[2], &r[3]);
 
     // Only proceed if rectangle has height and width
     while (r[2] && r[3]) {
 
-        //printf("Redraw %d rect %d %d  w %d h %d\n", handle,
-        //    r[0], r[1], r[2], r[3]);
-
-        // set clipping rectangle to current drawing rectangle
-        temp[0] = r[0];
-        temp[1] = r[1];
-        temp[2] = (r[0] + r[2]) - 1;
-        temp[3] = (r[1] + r[3]) - 1;
-        vs_clip(vhandle, 1, temp);
-
-        //printf("Redraw final rect %d %d, %d %d\n",
-        //    temp[0], temp[1], temp[2], temp[3]);
-
-        // Paint white - e.g. fill in client area with whatever.
-    	vsf_color(vhandle, 0);
-        vr_recfl(vhandle, temp);
-
-        // Get next rectangle
-        wind_get(handle, 12 /* WF_NEXTXYWH */, &r[0], &r[1], &r[2], &r[3]);
-        
         // Limit to only the visible and changed area
         intersect_xywh(r, cliprect);
+        
+        if (r[2] && r[3]) {
+            int16_t temp[4];
+
+            // set clipping rectangle to current drawing rectangle
+            temp[0] = r[0];
+            temp[1] = r[1];
+            temp[2] = (r[0] + r[2]) - 1;
+            temp[3] = (r[1] + r[3]) - 1;
+            vs_clip(vhandle, 1, temp);
+
+            // Paint white - e.g. fill in client area with whatever.
+        	vsf_color(vhandle, 0);
+            vr_recfl(vhandle, temp);
+        }
+        
+        // Get next rectangle
+        wind_get(handle, WF_NEXTXYWH, &r[0], &r[1], &r[2], &r[3]);
     }
     
     // Reenable updates
@@ -167,11 +148,7 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
 void Window::topped()
 {
     if (isopen) {
-        //graf_mouse(256 /* M_OFF */, (MFORM *)NULL);
-        //wind_update(1);
-        wind_set(handle, 10 /* WF_TOP */, 0, 0, 0, 0);
-        //wind_update(0);
-        //graf_mouse(257 /* M_ON */, (MFORM *)NULL);
+        wind_set(handle, WF_TOP, 0, 0, 0, 0);
     }
 }
 
@@ -179,6 +156,6 @@ void Window::fulled()
 {
     // get size of window 0 (desktop)
     int16_t rect[4];
-    wind_get(0, 4, &rect[0], &rect[1], &rect[2], &rect[3]);
+    wind_get(0, WF_WORKXYWH, &rect[0], &rect[1], &rect[2], &rect[3]);
     size(rect[0], rect[1], rect[2], rect[3]);
 }

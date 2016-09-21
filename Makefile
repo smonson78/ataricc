@@ -3,7 +3,7 @@ CXX=m68k-elf-g++
 OBJCOPY=m68k-elf-objcopy
 
 CFLAGS=-O2 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I.
-CXXFLAGS=-g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti
+CXXFLAGS=-g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti -fno-implicit-templates
 LDFLAGS=-lgcc
 
 INSTALL=/home/simon/dev/XSteem/hd/C
