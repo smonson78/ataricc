@@ -7,11 +7,20 @@ extern "C" {
 
 #include "app_app.h"
 
+class SmonsonWindow : public Window {
+
+    void draw(int16_t vhandle, int16_t rect[])
+    {
+        vsf_color(vhandle, 1);
+        v_bar(vhandle, rect);
+    }
+};
+
 int main(int argc, char **argv)
 {
     Application app;
 	
-	Window simon;
+	SmonsonWindow simon;
 	simon.settitle("Smonson");
 	simon.size(300, 50, 200, 150);
 	app.add_window(&simon);

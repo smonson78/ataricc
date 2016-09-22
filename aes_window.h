@@ -20,6 +20,10 @@ typedef enum {
     WF_VSLSIZE = 16
 } WF_Function;
 
+typedef enum {
+    END_UPDATE = 0,
+    BEG_UPDATE = 1
+} WU_Type;
 
 int16_t wind_create(int16_t wi_crkind, int16_t wi_crwx,
   int16_t wi_crwy, int16_t wi_crww, int16_t wi_crwh);
@@ -33,7 +37,7 @@ int16_t wind_set(int16_t wi_shandle, WF_Function wi_sfield,
 int16_t wind_get(int16_t wi_ghandle, WF_Function wi_gfield,
     int16_t *wi_gw1, int16_t *wi_gw2, int16_t *wi_gw3, int16_t *wi_gw4);
 
-int16_t wind_update(int16_t wi_ubegend);
+int16_t wind_update(WU_Type wi_ubegend);
 
 int16_t wind_calc(int16_t wi_ctype, int16_t wi_ckind,
     int16_t wi_cinx, int16_t wi_ciny,

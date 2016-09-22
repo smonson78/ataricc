@@ -19,31 +19,19 @@ class Window {
     const char *title;
         
     public:
-    Window() {
-        isopen = false;
-        handle = wind_create(0x2F, 0, 0, 640, 400);
-    }
+    Window();
     
-    void settitle(const char *t) {
-        title = t;
-	    wind_set(handle, WF_NAME, 
-	        (int32_t)t >> 16, (int32_t)t & 0xFFFF, 0, 0);
-    }
-    
-    void open() {
-        update();
-        wind_open(handle, dimensions[0], dimensions[1], 
-            dimensions[2], dimensions[3]);
-        isopen = true;
-    }
-    
+    void settitle(const char *t);
+    void open();
     void size(int16_t x, int16_t y, int16_t w, int16_t h);
     void update();
-    
-    void redraw(int16_t vhandle);
     void redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h);
-    void topped();
-    void fulled();
+    
+    virtual void draw(int16_t vhandle, int16_t rect[]);
+    virtual void topped();
+    virtual void fulled();
+    
+    
 };
 
 #endif

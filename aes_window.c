@@ -77,9 +77,9 @@ int16_t wind_set(int16_t wi_shandle, WF_Function wi_sfield,
    return crys_if(105);
 }
 
-int16_t wind_update(int16_t wi_ubegend)
+int16_t wind_update(WU_Type wi_ubegend)
 {
-    int_in[0] = wi_ubegend;
+    int_in[0] = (int16_t)wi_ubegend;
     return crys_if(107);
 }
 

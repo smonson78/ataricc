@@ -44,8 +44,16 @@ void Application::event_handler()
     int16_t msg[8];
     
     while (!quit) {
+    
+        //int16_t dummy[6];
 
         evnt_mesag(msg);
+        //evnt_multi(0x10, 0, 0, 0, 0, 0, 0, 0, 0,
+        //    0, 0, 0, 0, 0,
+        //    msg, 
+        //    0, 0, 
+        //    &dummy[0], &dummy[1], &dummy[2], &dummy[3], &dummy[4], &dummy[5]);
+            
         WM_Event e = (WM_Event)msg[0];
         
         // Find the window that owns the event
@@ -105,6 +113,7 @@ int16_t Application::open_vwork(int16_t phys_handle)
 }
 
 void Application::add_window(Window *w) {
+
     // Keep track of the given window
     for (int16_t i = 0; i < MAX_WINDOWS; i++) {
         if (!windows[i]) {

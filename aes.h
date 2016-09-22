@@ -52,6 +52,11 @@ typedef struct
   int16_t  mf_data[16];   /* Pointer form        */
 } MFORM;
 
+typedef enum {
+    M_OFF = 256,
+    M_ON = 257
+} M_Mouse;
+
 void aes();
 void vdi();
 int16_t crys_if(int16_t opcode);

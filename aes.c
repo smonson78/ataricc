@@ -377,9 +377,7 @@ int16_t evnt_multi (int16_t ev_mflags,  int16_t ev_mbclicks,
 
 void vr_recfl(int16_t handle, int16_t *pxyarray)
 {
-   //ptsin[0..3] = pxyarray[0..3];
    memcpy(vdi_ptsin, pxyarray, sizeof(int16_t) * 4);
-
    vdi_control[0] = 114;
    vdi_control[1] = 2;
    vdi_control[3] = 0;

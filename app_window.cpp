@@ -24,13 +24,8 @@ void Window::size(int16_t x, int16_t y, int16_t w, int16_t h) {
     update();
 
     if (isopen) {
-        //graf_mouse(256 /* M_OFF */, (MFORM *)NULL);
-        //wind_update(1);
         wind_set(handle, WF_CURRXYWH, x, y, w, h);
-        //wind_update(0);
-        //graf_mouse(257 /* M_ON */, (MFORM *)NULL);
     }
-
 }
 
 int16_t min(int16_t a, int16_t b)
@@ -87,24 +82,22 @@ void intersect_xywh(int16_t *dst, int16_t *src)
     dst[3] = h;
 }
 
-// Redraw only part of the window contents
+// Redraw part of the window contents
 void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h) 
 {
     // Disable updates
-    graf_mouse(256 /* M_OFF */, (MFORM *)NULL);
-    wind_update(1);
+    graf_mouse(M_OFF, (MFORM *)NULL);
+    wind_update(BEG_UPDATE);
 
     // Set draw mode=REPLACE
     vswr_mode(vhandle, 1);
-  
-	// solid colour mode
+
+    // setting the below options interferes with the desktop repaint  
+	// solid colour mode. What do you do then???
 	vsf_interior(vhandle, 1);
 	
-    // Colour 0 (white)
-	vsf_color(vhandle, 0);
-	
     // set clipping rectangle to updated area
-    int16_t cliprect[4]; // vs_clip takes CORNERS not WxH
+    int16_t cliprect[4];
     cliprect[0] = x;
     cliprect[1] = y;
     cliprect[2] = w;
@@ -114,34 +107,32 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
     int16_t r[4];
     wind_get(handle, WF_FIRSTXYWH, &r[0], &r[1], &r[2], &r[3]);
 
-    // Only proceed if rectangle has height and width
-    while (r[2] && r[3]) {
+    // If rectangle has height or width
+    while (r[2] || r[3]) {
 
-        // Limit to only the visible and changed area
+        // Intersect with repaintable area
         intersect_xywh(r, cliprect);
         
         if (r[2] && r[3]) {
-            int16_t temp[4];
 
-            // set clipping rectangle to current drawing rectangle
+            // set clipping rectangle to current rectangle
+            int16_t temp[4];
             temp[0] = r[0];
             temp[1] = r[1];
-            temp[2] = (r[0] + r[2]) - 1;
-            temp[3] = (r[1] + r[3]) - 1;
+            temp[2] = r[0] + r[2] - 1;
+            temp[3] = r[1] + r[3] - 1;
             vs_clip(vhandle, 1, temp);
-
-            // Paint white - e.g. fill in client area with whatever.
-        	vsf_color(vhandle, 0);
-            vr_recfl(vhandle, temp);
+            
+            draw(vhandle, temp);
         }
         
         // Get next rectangle
         wind_get(handle, WF_NEXTXYWH, &r[0], &r[1], &r[2], &r[3]);
     }
     
-    // Reenable updates
-    wind_update(0);
-    graf_mouse(257 /* M_ON */, (MFORM *)NULL);
+    // Enable updates
+    wind_update(END_UPDATE);
+    graf_mouse(M_ON, (MFORM *)NULL);
 }
 
 // Topped as in brought to top (focused)
@@ -159,3 +150,32 @@ void Window::fulled()
     wind_get(0, WF_WORKXYWH, &rect[0], &rect[1], &rect[2], &rect[3]);
     size(rect[0], rect[1], rect[2], rect[3]);
 }
+
+Window::Window() {
+    isopen = false;
+    handle = wind_create(0x2F, 0, 0, 640, 400);
+}
+
+void Window::settitle(const char *t) {
+    title = t;
+    wind_set(handle, WF_NAME, (int32_t)t >> 16, (int32_t)t & 0xFFFF, 0, 0);
+}
+
+void Window::open() {
+    update();
+    wind_open(handle, dimensions[0], dimensions[1], 
+        dimensions[2], dimensions[3]);
+    isopen = true;
+}
+
+// Draw client area
+void Window::draw(int16_t vhandle, int16_t rect[])
+{
+    // Paint white
+    vsf_color(vhandle, 0);
+    //vr_recfl(vhandle, temp);
+    v_bar(vhandle, rect);
+}
+
+
+
