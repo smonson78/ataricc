@@ -44,42 +44,19 @@ int16_t max(int16_t a, int16_t b)
 
 void intersect_xywh(int16_t *dst, int16_t *src)
 {
-    int16_t x1, y1, w, h;
+    int16_t x1, y1, x2, y2;
 
     // horizontal
-    if (dst[0] < src[0]) {
-        x1 = src[0];
-        w = min(
-            max((dst[0] + dst[2]) - src[0], 0), 
-            src[2]
-        );
-    } else {
-        x1 = dst[0];
-        w = min(
-            max((src[0] + src[2]) - dst[0], 0),
-            dst[2]
-        );
-    }
+    x1 = max(dst[0], src[0]);
+    x2 = min(dst[0] + dst[2], src[0] + src[2]);
+    dst[0] = x1;
+    dst[2] = max(0, x2 - x1);
 
     // vertical
-    if (dst[1] < src[1]) {
-        y1 = src[1];
-        h = min(
-            max((dst[1] + dst[3]) - src[1], 0),
-            src[3]
-        );
-    } else {
-        y1 = dst[1];
-        h = min(
-            max((src[1] + src[3]) - dst[1], 0),
-            dst[3]
-        );
-    }
-
-    dst[0] = x1;
+    y1 = max(dst[1], src[1]);
+    y2 = min(dst[1] + dst[3], src[1] + src[3]);
     dst[1] = y1;
-    dst[2] = w;
-    dst[3] = h;
+    dst[3] = max(0, y2 - y1);
 }
 
 // Redraw part of the window contents

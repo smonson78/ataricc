@@ -11,8 +11,16 @@ class SmonsonWindow : public Window {
 
     void draw(int16_t vhandle, int16_t rect[])
     {
+        //printf("draw(): handle is %d\n", vhandle);
         vsf_color(vhandle, 1);
         v_bar(vhandle, rect);
+        vsf_color(vhandle, 0);
+        v_ellipse(vhandle, 
+            (visible[0] + visible[2] / 2),
+            (visible[1] + visible[3] / 2),
+            visible[2] / 2,
+            visible[3] / 2
+        );
     }
 };
 

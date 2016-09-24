@@ -215,11 +215,6 @@ int16_t appl_init()
 
 	control[4] = 0;
 
-	//global[0] = 0;
-	//global[2] = 0xffff;
-	//int_out[0] = 0xffff;
-
-  //Cconout(' '); // also makes it work
   return crys_if(10);
 }
 
@@ -253,7 +248,6 @@ void vq_extnd (int16_t handle, int16_t owflag, int16_t *work_out)
 
 void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out)
 {
-	//printf("v_opnwk()\n");
 	memcpy(vdi_intin, work_in, sizeof(int16_t) * 11);
 
 	vdi_control[0] = 100;
@@ -261,11 +255,7 @@ void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out)
 	vdi_control[3] = 11;
 	vdi_control[6] = *handle;
 
-	//printf("about to call vdi()\n");
-	//Cconin();
 	vdi();
-	//printf("Result: 0x%04x\n", int_out[0]);
-	//Cconin();
 	
 	*handle = vdi_control[6];
 	memcpy(work_out, vdi_intout, 45);
@@ -397,7 +387,25 @@ void v_bar(int16_t handle, int16_t *pxyarray)
 
    vdi();
 }
- 	
+
+void v_ellipse (int16_t handle, int16_t x, int16_t y, int16_t xradius,
+    int16_t yradius)
+{
+   vdi_ptsin[0] = x;
+   vdi_ptsin[1] = y;
+   vdi_ptsin[2] = xradius;
+   vdi_ptsin[3] = yradius;
+
+   vdi_control[0] = 11;
+   vdi_control[1] = 2;
+   vdi_control[3] = 0;
+   vdi_control[5] = 5;
+   vdi_control[6] = handle;
+
+   vdi();
+}
+
+
 int16_t vswr_mode(int16_t handle, int16_t mode)
 {
    vdi_intin[0] = mode;
@@ -454,5 +462,47 @@ void vs_clip(int16_t handle, int16_t clip_flag, int16_t *pxyarray)
 
     vdi();
 }
+
+// Get fill attributes
+void vqf_attributes(int16_t handle, int16_t *attrib)
+{
+    vdi_control[0] = 37;
+    vdi_control[1] = 0;
+    vdi_control[3] = 0;
+    vdi_control[6] = handle;
+
+    vdi();
+
+    memcpy(attrib, vdi_intout, sizeof(int16_t) * 5);
+}
+
+int16_t vsf_style(int16_t handle, int16_t style_index)
+{
+    vdi_intin[0] = style_index;
+
+    vdi_control[0] = 24;
+    vdi_control[1] = 0;
+    vdi_control[3] = 1;
+    vdi_control[6] = handle;
+
+    vdi();
+
+    return vdi_intout[0];
+}
+
+int16_t vsf_perimeter(int16_t handle, int16_t per_vis)
+{
+   vdi_intin[0] = per_vis;
+
+   vdi_control[0] = 104;
+   vdi_control[1] = 0;
+   vdi_control[3] = 1;
+   vdi_control[6] = handle;
+
+   vdi();
+
+   return vdi_intout[0];
+}
+
 
 #endif

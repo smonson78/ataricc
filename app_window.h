@@ -11,10 +11,11 @@ extern "C" {
 class Window {
     public:
     int16_t handle;
-    
+    int16_t visible[4];
+        
     private:
     int16_t dimensions[4];
-    int16_t visible[4];
+
     int16_t isopen;
     const char *title;
         

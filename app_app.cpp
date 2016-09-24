@@ -20,6 +20,8 @@ Application::Application() {
 
     screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
     screen_vhandle = open_vwork(screen_phandle);
+    //printf("Desktop phandle is %d\n", screen_phandle);
+    //printf("Screen vhandle is %d\n", screen_vhandle);
 }
 
 Application::~Application() {
@@ -56,6 +58,13 @@ void Application::event_handler()
             
         WM_Event e = (WM_Event)msg[0];
         
+        // Save graphical attributes
+        int16_t fill_attributes[5];
+        vqf_attributes(screen_vhandle, fill_attributes);
+        printf("%d %d %d %d %d\n", 
+            fill_attributes[0], fill_attributes[1], fill_attributes[2],
+            fill_attributes[3], fill_attributes[4]);
+        
         // Find the window that owns the event
         Window *w;
         switch (e) {
@@ -91,8 +100,18 @@ void Application::event_handler()
             break;
         case WM_MOVED:
             w->size(msg[4], msg[5], msg[6], msg[7]);
+            w->redraw(screen_vhandle,
+                msg[4], msg[5], msg[6], msg[7]);
             break;
         }
+        
+        // Restore graphical attributes
+        //vsf_interior(screen_vhandle, 2);
+        vsf_interior(screen_vhandle, fill_attributes[0]);
+        vsf_color(screen_vhandle, fill_attributes[1]);
+        vsf_style(screen_vhandle, fill_attributes[2]);
+        vswr_mode(screen_vhandle, fill_attributes[3]);
+        vsf_perimeter(screen_vhandle, fill_attributes[4]);
     }
 }
 
@@ -103,7 +122,8 @@ int16_t Application::open_vwork(int16_t phys_handle)
     int16_t new_handle;
     int16_t i;
 
-    for (i = 0; i < 10; i++) {
+    work_in[0] = 2 + Getrez();
+    for (i = 1; i < 10; i++) {
 	    work_in[i] = 1;
     }
     work_in[10] = 2;
