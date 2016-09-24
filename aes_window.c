@@ -41,7 +41,7 @@ int16_t wind_get(int16_t wi_ghandle, WF_Function wi_gfield,
     return int_out[0];
 }
 
-int16_t wind_calc(int16_t wi_ctype, int16_t wi_ckind,
+int16_t wind_calc(WC_Type wi_ctype, int16_t wi_ckind,
     int16_t wi_cinx, int16_t wi_ciny,
     int16_t wi_cinw, int16_t wi_cinh,
     int16_t *coutx, int16_t *couty,
@@ -82,5 +82,18 @@ int16_t wind_update(WU_Type wi_ubegend)
     int_in[0] = (int16_t)wi_ubegend;
     return crys_if(107);
 }
+
+int16_t wind_close(int16_t wi_clhandle)
+{
+   int_in[0] = wi_clhandle;
+   return crys_if(102);
+}
+
+int16_t wind_delete(int16_t wi_dhandle)
+{
+   int_in[0] = wi_dhandle;
+   return crys_if(103);
+}
+
 
 

@@ -103,8 +103,12 @@ void v_ellipse (int16_t handle, int16_t x, int16_t y, int16_t xradius,
 void vqf_attributes(int16_t handle, int16_t *attrib);
 int16_t vsf_style(int16_t handle, int16_t style_index);
 int16_t vsf_perimeter(int16_t handle, int16_t per_vis);
+void v_circle(int16_t handle, int16_t x, int16_t y, int16_t radius);
 
 void vs_clip(int16_t handle, int16_t clip_flag, int16_t *pxyarray);
+
+// resource
+int16_t rsrc_free();
 
 
 #endif

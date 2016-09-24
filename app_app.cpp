@@ -6,6 +6,8 @@ Application::Application() {
     // Clear window list
     for (int16_t i = 0; i < MAX_WINDOWS; i++)
         windows[i] = (Window *)NULL;
+        
+    quit_flag = false;
     
     app_id = appl_init();
     if (app_id == -1) {
@@ -20,8 +22,6 @@ Application::Application() {
 
     screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
     screen_vhandle = open_vwork(screen_phandle);
-    //printf("Desktop phandle is %d\n", screen_phandle);
-    //printf("Screen vhandle is %d\n", screen_vhandle);
 }
 
 Application::~Application() {
@@ -40,12 +40,11 @@ Window *Application::find_window_by_handle(int16_t h)
     return (Window *)NULL;
 }
 
-void Application::event_handler()
+void Application::run()
 {
-    int16_t quit = 0;
     int16_t msg[8];
     
-    while (!quit) {
+    while (quit_flag == false) {
     
         //int16_t dummy[6];
 
@@ -57,13 +56,6 @@ void Application::event_handler()
         //    &dummy[0], &dummy[1], &dummy[2], &dummy[3], &dummy[4], &dummy[5]);
             
         WM_Event e = (WM_Event)msg[0];
-        
-        // Save graphical attributes
-        int16_t fill_attributes[5];
-        vqf_attributes(screen_vhandle, fill_attributes);
-        printf("%d %d %d %d %d\n", 
-            fill_attributes[0], fill_attributes[1], fill_attributes[2],
-            fill_attributes[3], fill_attributes[4]);
         
         // Find the window that owns the event
         Window *w;
@@ -77,6 +69,7 @@ void Application::event_handler()
             w = find_window_by_handle(msg[3]);
             break;
         default:
+            w = (Window *)NULL;
             break;
         }
         
@@ -90,28 +83,21 @@ void Application::event_handler()
             w->topped();
             break;
         case WM_CLOSED:
-            quit = 1; // any window closed - quit
+            w->close();
             break;
         case WM_FULLED:
             w->fulled();
             break;
         case WM_SIZED:
             w->size(msg[4], msg[5], msg[6], msg[7]);
+            //w->redraw(screen_vhandle,
+            //    msg[4], msg[5], msg[6], msg[7]);
+            // This automatically redraws only if window is bigger
             break;
         case WM_MOVED:
             w->size(msg[4], msg[5], msg[6], msg[7]);
-            w->redraw(screen_vhandle,
-                msg[4], msg[5], msg[6], msg[7]);
             break;
         }
-        
-        // Restore graphical attributes
-        //vsf_interior(screen_vhandle, 2);
-        vsf_interior(screen_vhandle, fill_attributes[0]);
-        vsf_color(screen_vhandle, fill_attributes[1]);
-        vsf_style(screen_vhandle, fill_attributes[2]);
-        vswr_mode(screen_vhandle, fill_attributes[3]);
-        vsf_perimeter(screen_vhandle, fill_attributes[4]);
     }
 }
 
@@ -143,6 +129,10 @@ void Application::add_window(Window *w) {
     }
     
     // FIXME: handle error
+}
+
+void Application::quit() {
+    quit_flag = true;
 }
 
 

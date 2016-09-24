@@ -177,7 +177,7 @@ void aes()
 	  "trap #2\n\t"
     :
     : "p"(&c)
-    : "d0", "d1"
+    : "d0", "d1", "memory"
   );
 }
 
@@ -191,7 +191,8 @@ void vdi()
     "trap #2\n\t"
     : /* outputs */
     : "p"(&v) /* inputs */
-    : "d0", "d1" /* clobbered regs */
+    : "d0", "d1", "memory" /* clobbered regs */
+    /* Note GEMLib saves also "d2", "a0", "a1", "a2". Needed??? */
   );
 }
 
@@ -503,6 +504,30 @@ int16_t vsf_perimeter(int16_t handle, int16_t per_vis)
 
    return vdi_intout[0];
 }
+
+int16_t rsrc_free()
+{
+   return crys_if(111);
+}
+
+void v_circle(int16_t handle, int16_t x, int16_t y, int16_t radius)
+{
+   vdi_ptsin[0] = x;
+   vdi_ptsin[1] = y;
+   vdi_ptsin[2] = 0;
+   vdi_ptsin[3] = 0;
+   vdi_ptsin[4] = radius;
+   vdi_ptsin[5] = 0;
+
+   vdi_control[0] = 11;
+   vdi_control[1] = 3;
+   vdi_control[3] = 0;
+   vdi_control[5] = 4;
+   vdi_control[6] = handle;
+
+   vdi();
+}
+
 
 
 #endif

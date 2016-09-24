@@ -14,13 +14,12 @@ class Application {
 
     public:
 	int16_t app_id;
-    int16_t screen_phandle;
-    int16_t screen_vhandle;
 
     private:
-	int16_t gr_wchar, gr_hchar;
-	int16_t gr_wbox, gr_hbox;
-	
+	int16_t gr_wchar, gr_hchar, gr_wbox, gr_hbox;
+    int16_t screen_phandle;
+    int16_t screen_vhandle;
+	bool quit_flag;
 	Window *windows[MAX_WINDOWS];
 
     public:
@@ -28,12 +27,14 @@ class Application {
     ~Application();
     
     void add_window(Window *w);
-    
-    Window *find_window_by_handle(int16_t h);
-    void event_handler();
-    
+    void quit();
+    void run();
+        
     private:
     int16_t open_vwork(int16_t phys_handle);
+    Window *find_window_by_handle(int16_t h);
+
+
 };
 
 #endif

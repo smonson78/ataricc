@@ -8,11 +8,16 @@ extern "C" {
 #include <stdint.h>
 }
 
+class Application;
+
 class Window {
     public:
     int16_t handle;
-    int16_t visible[4];
-        
+
+    protected:
+    Application &app;
+    int16_t visible[4]; // work area
+    
     private:
     int16_t dimensions[4];
 
@@ -20,17 +25,21 @@ class Window {
     const char *title;
         
     public:
-    Window();
+    Window(Application &a);
     
     void settitle(const char *t);
-    void open();
+
     void size(int16_t x, int16_t y, int16_t w, int16_t h);
     void update();
     void redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h);
+
+    virtual void open();
+    virtual void close();
     
     virtual void draw(int16_t vhandle, int16_t rect[]);
     virtual void topped();
     virtual void fulled();
+    
     
     
 };

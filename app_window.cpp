@@ -6,12 +6,12 @@ extern "C" {
 #include <libc.h>
 }
 
+#include "app_app.h"
 #include "app_window.h"
 
 void Window::update() {
-    // Find visible area
-    wind_calc(1 /* WC_WORK */,
-        0x2F,
+    // Calculate work area from window dimensions
+    wind_calc(WC_WORK, WIND_BASIC,
         dimensions[0], dimensions[1], dimensions[2], dimensions[3],
         &visible[0], &visible[1], &visible[2], &visible[3]);
 }
@@ -66,13 +66,6 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
     graf_mouse(M_OFF, (MFORM *)NULL);
     wind_update(BEG_UPDATE);
 
-    // Set draw mode=REPLACE
-    vswr_mode(vhandle, 1);
-
-    // setting the below options interferes with the desktop repaint  
-	// solid colour mode. What do you do then???
-	vsf_interior(vhandle, 1);
-	
     // set clipping rectangle to updated area
     int16_t cliprect[4];
     cliprect[0] = x;
@@ -128,9 +121,9 @@ void Window::fulled()
     size(rect[0], rect[1], rect[2], rect[3]);
 }
 
-Window::Window() {
+Window::Window(Application &a) : app(a) {
     isopen = false;
-    handle = wind_create(0x2F, 0, 0, 640, 400);
+    handle = wind_create(WIND_BASIC, 0, 0, 640, 400);
 }
 
 void Window::settitle(const char *t) {
@@ -145,9 +138,16 @@ void Window::open() {
     isopen = true;
 }
 
+void Window::close() {
+}
+
 // Draw client area
 void Window::draw(int16_t vhandle, int16_t rect[])
 {
+    // Set draw mode=REPLACE, fill style=solid
+    vswr_mode(vhandle, 1);
+	vsf_interior(vhandle, 1);
+
     // Paint white
     vsf_color(vhandle, 0);
     //vr_recfl(vhandle, temp);
