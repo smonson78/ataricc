@@ -15,17 +15,19 @@ class Window {
     int16_t handle;
 
     protected:
-    Application &app;
+    Application *app;
     int16_t visible[4]; // work area
     
     private:
+    bool maximised;
     int16_t dimensions[4];
 
     int16_t isopen;
     const char *title;
         
     public:
-    Window(Application &a);
+    Window();
+    void set_app(Application *a);
     
     void settitle(const char *t);
 

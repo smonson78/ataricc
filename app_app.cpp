@@ -108,6 +108,8 @@ int16_t Application::open_vwork(int16_t phys_handle)
 
 void Application::add_window(Window *w) {
 
+    w->set_app(this);
+    
     // Keep track of the given window
     for (int16_t i = 0; i < MAX_WINDOWS; i++) {
         if (!windows[i]) {
@@ -115,6 +117,7 @@ void Application::add_window(Window *w) {
             return;
         }
     }
+
     form_alert(1, "[1][Out of windows!][ OK ]");
     quit();
 }

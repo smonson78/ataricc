@@ -8,9 +8,6 @@ extern "C" {
 #include "app_app.h"
 
 class SmonsonWindow : public Window {
-    public:
-    SmonsonWindow(Application &a) : Window(a) {
-    }
 
     void draw(int16_t vhandle, int16_t rect[]) {
         vsf_color(vhandle, 1);
@@ -25,7 +22,7 @@ class SmonsonWindow : public Window {
     }
     
     void close() {
-        app.quit();
+        app->quit();
     }
 };
 
@@ -33,12 +30,12 @@ int main(int argc, char **argv)
 {
     Application app;
 	
-	SmonsonWindow simon(app);
+	SmonsonWindow simon;
 	simon.settitle("Smonson");
 	simon.size(300, 50, 200, 150);
 	app.add_window(&simon);
 
-	Window simon2(app);
+	Window simon2;
 	simon2.settitle("Not-smonson");
 	simon2.size(400, 80, 200, 150);
 	app.add_window(&simon2);

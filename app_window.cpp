@@ -9,6 +9,12 @@ extern "C" {
 #include "app_app.h"
 #include "app_window.h"
 
+Window::Window() {
+    isopen = false;
+    maximised = false;
+    handle = wind_create(WIND_BASIC, 0, 0, 640, 400);
+}
+
 void Window::update() {
     // Calculate work area from window dimensions
     wind_calc(WC_WORK, WIND_BASIC,
@@ -121,11 +127,6 @@ void Window::fulled()
     size(rect[0], rect[1], rect[2], rect[3]);
 }
 
-Window::Window(Application &a) : app(a) {
-    isopen = false;
-    handle = wind_create(WIND_BASIC, 0, 0, 640, 400);
-}
-
 void Window::settitle(const char *t) {
     title = t;
     wind_set(handle, WF_NAME, (int32_t)t >> 16, (int32_t)t & 0xFFFF, 0, 0);
@@ -152,6 +153,11 @@ void Window::draw(int16_t vhandle, int16_t rect[])
     vsf_color(vhandle, 0);
     //vr_recfl(vhandle, temp);
     v_bar(vhandle, rect);
+}
+
+void Window::set_app(Application *a)
+{
+    app = a;
 }
 
 
