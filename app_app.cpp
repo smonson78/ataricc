@@ -56,45 +56,33 @@ void Application::run()
         //    &dummy[0], &dummy[1], &dummy[2], &dummy[3], &dummy[4], &dummy[5]);
             
         WM_Event e = (WM_Event)msg[0];
-        
-        // Find the window that owns the event
         Window *w;
+
         switch (e) {
         case WM_REDRAW:
-        case WM_NEWTOP:
-        case WM_TOPPED:
-        case WM_FULLED:
-        case WM_SIZED:
-        case WM_MOVED:
             w = find_window_by_handle(msg[3]);
-            break;
-        default:
-            w = (Window *)NULL;
-            break;
-        }
-        
-        switch (e) {
-        case WM_REDRAW:
             w->redraw(screen_vhandle,
                 msg[4], msg[5], msg[6], msg[7]);
             break;
         case WM_NEWTOP:
         case WM_TOPPED:
+            w = find_window_by_handle(msg[3]);
             w->topped();
             break;
         case WM_CLOSED:
+            w = find_window_by_handle(msg[3]);
             w->close();
             break;
         case WM_FULLED:
+            w = find_window_by_handle(msg[3]);
             w->fulled();
             break;
         case WM_SIZED:
+            w = find_window_by_handle(msg[3]);
             w->size(msg[4], msg[5], msg[6], msg[7]);
-            //w->redraw(screen_vhandle,
-            //    msg[4], msg[5], msg[6], msg[7]);
-            // This automatically redraws only if window is bigger
             break;
         case WM_MOVED:
+            w = find_window_by_handle(msg[3]);
             w->size(msg[4], msg[5], msg[6], msg[7]);
             break;
         }
@@ -127,8 +115,8 @@ void Application::add_window(Window *w) {
             return;
         }
     }
-    
-    // FIXME: handle error
+    form_alert(1, "[1][Out of windows!][ OK ]");
+    quit();
 }
 
 void Application::quit() {
