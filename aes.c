@@ -2,6 +2,7 @@
 #include <tos.h>
 #include <libc.h>
 
+
 static AESPB c;
 static VDIPB v;
 
@@ -528,6 +529,12 @@ void v_circle(int16_t handle, int16_t x, int16_t y, int16_t radius)
    vdi();
 }
 
+int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow)
+{
+   int_in[0] = me_bshow;
+   addr_in[0] = me_btree;
+   return crys_if(30);
+}
 
 
 #endif

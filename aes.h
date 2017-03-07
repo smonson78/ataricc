@@ -2,6 +2,7 @@
 #define __AES_H
 
 #include <stdint.h>
+#include <aes_object.h>
 
 /* Event types */
 typedef enum {
@@ -110,5 +111,7 @@ void vs_clip(int16_t handle, int16_t clip_flag, int16_t *pxyarray);
 // resource
 int16_t rsrc_free();
 
+// menu
+int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow);
 
 #endif

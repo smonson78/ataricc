@@ -21,8 +21,12 @@ class SmonsonWindow : public Window {
         );
     }
     
-    void close() {
-        app->quit();
+    void event_closed() {
+        int16_t response = form_alert(1, 
+            "[2][Are you sure you want to quit?]"
+            "[ NO | YES ]");
+        if (response == 2)
+            app->quit();
     }
 };
 
@@ -31,22 +35,22 @@ int main(int argc, char **argv)
     Application app;
 	
 	SmonsonWindow simon;
+	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
 	simon.size(300, 50, 200, 150);
 	app.add_window(&simon);
 
 	Window simon2;
+	app.add_window(&simon2);
+	simon2.setstyle(WIND_NAME|WIND_MOVER);
 	simon2.settitle("Not-smonson");
 	simon2.size(400, 80, 200, 150);
-	app.add_window(&simon2);
 
 	simon2.open();
 	simon.open();
 
     // Main loop	
     app.run();
-  
-    form_alert(1, "[1][Thanks!][ OK ]");
   
 	return 0;
 }

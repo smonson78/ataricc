@@ -6,9 +6,15 @@ extern "C" {
 #include <libc.h>
 }
 
+#include "aes_object.h"
+
 #include "app_window.h"
 
-#define MAX_WINDOWS 7
+#define MAX_WINDOWS 16
+
+typedef struct {
+    int16_t x, y, w, h;
+} RectXYWH;
 
 class Application {
 
@@ -29,6 +35,8 @@ class Application {
     void add_window(Window *w);
     void quit();
     void run();
+    
+    void get_screen_size(RectXYWH *rect);
         
     private:
     int16_t open_vwork(int16_t phys_handle);

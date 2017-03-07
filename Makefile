@@ -2,8 +2,8 @@ CC=m68k-elf-gcc
 CXX=m68k-elf-g++
 OBJCOPY=m68k-elf-objcopy
 
-CFLAGS=-O2 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -ffreestanding
-CXXFLAGS=-O2 -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti -fno-implicit-templates -ffreestanding
+CFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -ffreestanding
+CXXFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti -fno-implicit-templates -ffreestanding
 LDFLAGS=-lgcc
 
 INSTALL=/home/simon/dev/XSteem/hd/C
@@ -18,9 +18,6 @@ $(TARGET): test.elf
 	#$(OBJCOPY) --remove-section=.discard --writable-text test.elf ready.o
 	/home/simon/dev/vlink/vlink test.elf -b ataritos -o $(TARGET)
 	@$(RM) ready.o
-	
-test.o: test.cpp
-crt0.o: crt0.c
 
 clean:
 	$(RM) $(TARGET) *.o *.elf test.bin
@@ -32,7 +29,7 @@ dasm: $(TARGET)
 	@$(RM) test.bin
 
 info: debug
-	@m68k-elf-objdump -h info.elf
+	@m68k-elf-objdump -h test.elf
 
 elf: test.elf
 test.elf: test.o $(ALLLIBS)
