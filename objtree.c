@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     
     fclose(infile);
 
-    int max = 15;
+    int max = 16;
     for (int i = 0; i <= max; i++)
     {
         disp_obj((OBJECT *)buf, i);

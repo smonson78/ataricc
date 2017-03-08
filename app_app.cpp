@@ -38,7 +38,7 @@ Application::Application() {
     screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
     screen_vhandle = open_vwork(screen_phandle);
     
-    OBJECT tree[16];
+    OBJECT tree[17];
     //for (int i = 0; i < 15; i++) {
     //    init_object(&tree[i]);
     //}
@@ -309,16 +309,51 @@ tree[15].ob_width = 0x7;
 tree[15].ob_height = 0x1;
 tree[15].ob_spec = (void *)0x00ff1100;
 
-    if (rsrc_load("TEST.RSC"))
-    {
-        form_alert(1, "[1][Resource loaded][ OK ]");
-    }
+tree[16].ob_type = 28;
+tree[16].ob_next = 15;
+tree[16].ob_head = -1;
+tree[16].ob_tail = -1;
+tree[16].ob_flags = 32;
+tree[16].ob_state = 0;
+tree[16].ob_x = 0x0;
+tree[16].ob_y = 0x0;
+tree[16].ob_width = 0x7;
+tree[16].ob_height = 0x1;
+tree[16].ob_spec = (void *)"  Quit";
+
+
+    rsrc_load("TEST.RSC");
     
     OBJECT *menu;
     rsrc_gaddr(0, 0, &menu);
 
+    char buf[1024];
+    for (int i = 0; i <= 16; i++)
+    {
+#if 0            
+        printf("%02x - %04x %04x %04x\n", 
+            i,
+            (uint16_t)menu[i].ob_next,
+            (uint16_t)menu[i].ob_head,
+            (uint16_t)menu[i].ob_tail
+        );
+#else
+        printf("%02x - %04x %04x %04x    %04x %04x %04x\n", 
+            i,
+            (uint16_t)tree[i].ob_next,
+            (uint16_t)tree[i].ob_head,
+            (uint16_t)tree[i].ob_tail,
+            (uint16_t)menu[i].ob_next,
+            (uint16_t)menu[i].ob_head,
+            (uint16_t)menu[i].ob_tail
+            // these compare equal.
+        );
+#endif
+    }
+
 
     graf_mouse(256, (MFORM*)NULL);
+//    menu_bar(tree, MENU_SHOW);
     menu_bar(menu, MENU_SHOW);
     graf_mouse(257, (MFORM*)NULL);
 }
