@@ -110,6 +110,8 @@ void vs_clip(int16_t handle, int16_t clip_flag, int16_t *pxyarray);
 
 // resource
 int16_t rsrc_free();
+int16_t rsrc_gaddr(int16_t re_gtype, int16_t re_gindex, OBJECT **gaddr);
+int16_t rsrc_load (const char *re_lpfname);
 
 // menu
 int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow);

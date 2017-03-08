@@ -1,6 +1,8 @@
 #ifndef __AES_OBJECT_H
 #define __AES_OBJECT_H
 
+#include <stdint.h>
+
 typedef struct
 {
     int16_t ob_next;    /* The next object               */
@@ -24,7 +26,7 @@ typedef enum {
 #endif
 
 /*
-    256 byte header?
+    64 byte header
     0 next -1 head 1 tail 5 type 25 (IBOX) flags 0 state 0 spec 0 pos 0,0 80x25
     1 next 5 head 2 tail 2 type 20 (GBOX) flags 0 state 0 spec 0x1100 pos 0,0 80x0x201
     2 next 1 head 3 tail 4 type 25 (IBOX) flags 0 state 0 spec 0 pos 2,0 15x0x301
@@ -36,7 +38,7 @@ typedef enum {
     8 next 9 head -1 tail -1 type 28 (GSTRING) flags 0 state 8 spec 0x1f6 pos 0,1 21,1
     
     0 IBOX (root)
-    1 GBOX (the bar)               5 IBOX (the active)
+    1 GBOX (the bar)               5 IBOX (the screen)
     2 IBOX (the active)            6        15 GBOX
     3 4 TITLE (Program, File)      7 8 9
     

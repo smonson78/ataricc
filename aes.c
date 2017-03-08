@@ -506,6 +506,26 @@ int16_t vsf_perimeter(int16_t handle, int16_t per_vis)
    return vdi_intout[0];
 }
 
+int16_t rsrc_load(const char *re_lpfname)
+{
+   addr_in[0] = (char *)re_lpfname;
+   return crys_if(110);
+}
+
+int16_t rsrc_gaddr(int16_t re_gtype, int16_t re_gindex, OBJECT **gaddr)
+{
+   int_in[0] = re_gtype;
+   int_in[1] = re_gindex;
+   control[4] = 1;
+
+   crys_if(112);
+
+   control[4] = 0;
+   *gaddr = (OBJECT *)addr_out[0];
+
+   return int_out[0];
+}
+
 int16_t rsrc_free()
 {
    return crys_if(111);
@@ -535,6 +555,7 @@ int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow)
    addr_in[0] = me_btree;
    return crys_if(30);
 }
+
 
 
 #endif
