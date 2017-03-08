@@ -1,7 +1,20 @@
 #include "app_app.h"
 #include "app_window.h"
 
-
+void init_object(OBJECT *o) {
+    //memset(o, 0, sizeof(OBJECT));
+    o->ob_x = 0;
+    o->ob_y = 0;
+    o->ob_width = 0;
+    o->ob_height = 0;
+    o->ob_spec = (void *)0;
+    o->ob_type = 0;
+    o->ob_flags = 0;
+    o->ob_state = 0;
+    o->ob_next = -1;
+    o->ob_head = -1;
+    o->ob_tail = -1;
+}
 
 Application::Application() {
 
@@ -25,16 +38,82 @@ Application::Application() {
     screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
     screen_vhandle = open_vwork(screen_phandle);
     
-    OBJECT root;
-    memset(&root, 0, sizeof(OBJECT));
-    root.ob_type = 32 /* G_MENU */;
-    //root.ob_spec = (void *)"File";
-    root.ob_width = 640;
-    root.ob_height = 400;
-    root.ob_next = -1;
-    root.ob_head = -1;
-    root.ob_tail = -1;
-    menu_bar(&root, MENU_SHOW);
+    OBJECT tree[15];
+    for (int i = 0; i < 15; i++) {
+        init_object(&tree[i]);
+    }
+    
+    // ROOT
+    tree[0].ob_type = 25 /* I_BOX */;
+    tree[0].ob_width = 80;
+    tree[0].ob_height = 25;
+    tree[0].ob_head = 1;
+    tree[0].ob_tail = 4;
+    
+    // THE BAR
+    tree[1].ob_type = 20 /* G_BOX */;
+    tree[1].ob_spec = (void *)0x1100;
+    tree[1].ob_width = 80;
+    tree[1].ob_height = 0x201;
+    tree[1].ob_next = 4;
+    tree[1].ob_head = 2;
+    tree[1].ob_tail = 2;
+    
+    // THE ACTIVE
+    tree[2].ob_type = 25 /* I_BOX */;
+    tree[2].ob_x = 2;
+    tree[2].ob_width = 10;
+    tree[2].ob_height = 0x301;
+    tree[2].ob_next = 1;
+    tree[2].ob_head = 3;
+    tree[2].ob_tail = 3;
+    
+    // menu 1 (DESK)
+    tree[3].ob_type = 32 /* I_TITLE */;
+    tree[3].ob_spec = (void *)"   DESK   ";
+    tree[3].ob_width = 10;
+    tree[3].ob_height = 0x301;
+    tree[3].ob_next = 2;
+   
+    // THE SCREEN
+    tree[4].ob_type = 25 /* I_BOX */;
+    tree[4].ob_y = 0x301;
+    tree[4].ob_width = 23;
+    tree[4].ob_height = 8;
+    tree[4].ob_head = 5;
+    tree[4].ob_tail = 5;
+    tree[4].ob_next = 0;
+
+    // dropdown 1 (DESK)
+    tree[5].ob_type = 20 /* G_BOX */;
+    tree[5].ob_x = 2;
+    tree[5].ob_y = 0;
+    tree[5].ob_spec = (void *)0xff1100;
+    tree[5].ob_width = 25;
+    tree[5].ob_height = 8;
+    tree[5].ob_next = 4;
+    tree[5].ob_head = 6;
+    tree[5].ob_tail = 13;
+    
+    // DESK menu items 6,7,8,9,10,11,12,13
+    for (int i = 0; i < 8; i++) {
+        tree[6 + i].ob_type = 28; // G_STRING
+        tree[6 + i].ob_next = 6 + i + 1;
+        tree[6 + i].ob_y = i;
+        tree[6 + i].ob_width = 21;
+        tree[6 + i].ob_height = 1;
+    }
+    tree[7].ob_state = 8;
+    tree[13].ob_next = 5;
+    
+    tree[8].ob_spec = (void *)"~~~~~~~~~~~~~~~1";
+    tree[9].ob_spec = (void *)"~~~~~~~~~~~~~~~2";
+    tree[10].ob_spec = (void *)"~~~~~~~~~~~~~~~3";
+    tree[11].ob_spec = (void *)"~~~~~~~~~~~~~~~4";            
+    tree[12].ob_spec = (void *)"~~~~~~~~~~~~~~~5";
+    tree[13].ob_spec = (void *)"~~~~~~~~~~~~~~~6";
+
+    menu_bar(tree, MENU_SHOW);
 }
 
 Application::~Application() {
