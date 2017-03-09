@@ -27,6 +27,7 @@ class Application {
     int16_t screen_vhandle;
 	bool quit_flag;
 	Window *windows[MAX_WINDOWS];
+    OBJECT tree[17];
 
     public:
     Application();
@@ -41,8 +42,6 @@ class Application {
     private:
     int16_t open_vwork(int16_t phys_handle);
     Window *find_window_by_handle(int16_t h);
-
-
 };
 
 #endif

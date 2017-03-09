@@ -190,7 +190,6 @@ void exit(uint16_t retval)
 	_exit(retval);
 }
 
-
 void malloc() {
     printf("malloc called\n");
 }
@@ -207,6 +206,17 @@ void memset(void *dest, int c, size_t bytes) {
     while (bytes--) {
         *((char *)dest++) = (char)c;
     }
+}
+
+int memcmp(const void *s1, const void *s2, size_t n)
+{
+    while (n--) {
+        if (*(uint8_t *)s1 != *(uint8_t *)s2)
+            return *(uint8_t *)s1 - *(uint8_t *)s2;
+        s1++;
+        s2++;
+    }
+    return 0;
 }
 
 int strlen(const char *src) {

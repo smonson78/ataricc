@@ -1,21 +1,6 @@
 #include "app_app.h"
 #include "app_window.h"
 
-void init_object(OBJECT *o) {
-    //memset(o, 0, sizeof(OBJECT));
-    o->ob_x = 0;
-    o->ob_y = 0;
-    o->ob_width = 0;
-    o->ob_height = 0;
-    o->ob_spec = (void *)0;
-    o->ob_type = 0;
-    o->ob_flags = 0;
-    o->ob_state = 0;
-    o->ob_next = -1;
-    o->ob_head = -1;
-    o->ob_tail = -1;
-}
-
 Application::Application() {
 
     // Clear window list
@@ -37,329 +22,222 @@ Application::Application() {
 
     screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
     screen_vhandle = open_vwork(screen_phandle);
+
+    tree[0].ob_type = 25; // setting just this is fine
+    tree[0].ob_next = -1; // setting this causes 2-bomb crash
+    tree[0].ob_head = 1; // setting this also, 3 bombs
+    tree[0].ob_tail = 5;
+    tree[0].ob_flags = 0;
+    tree[0].ob_state = 0;
+    tree[0].ob_x = (0 * 8) + 0;
+    tree[0].ob_y = (0 * 16) + 0;
+    tree[0].ob_width = (80 * 8) + 0;
+    tree[0].ob_height = (25 * 16) + 0;
+    tree[0].ob_spec = (void *)0x00000000;
     
-    OBJECT tree[17];
-    //for (int i = 0; i < 15; i++) {
-    //    init_object(&tree[i]);
-    //}
-#if 0    
-    // ROOT
-    tree[0].ob_type = 25 /* I_BOX */;
-    tree[0].ob_width = 80;
-    tree[0].ob_height = 25;
-    tree[0].ob_head = 1;
-    tree[0].ob_tail = 4;
-    
-    // THE BAR
-    tree[1].ob_type = 20 /* G_BOX */;
-    tree[1].ob_spec = (void *)0x1100;
-    tree[1].ob_width = 80;
-    tree[1].ob_height = 0x201;
-    tree[1].ob_next = 4;
+    tree[1].ob_type = 20;
+    tree[1].ob_next = 5;
     tree[1].ob_head = 2;
     tree[1].ob_tail = 2;
-    
-    // THE ACTIVE
-    tree[2].ob_type = 25 /* I_BOX */;
-    tree[2].ob_x = 2;
-    tree[2].ob_y = 0;
-    tree[2].ob_width = 15;
-    tree[2].ob_height = 0x201;
+    tree[1].ob_flags = 0;
+    tree[1].ob_state = 0;
+    tree[1].ob_x = (0 * 8) + 0;
+    tree[1].ob_y = (0 * 16) + 0;
+    tree[1].ob_width = (80 * 8) + 0;
+    tree[1].ob_height = (1 * 16) + 2;
+    tree[1].ob_spec = (void *)0x00001100;
+
+    tree[2].ob_type = 25;
     tree[2].ob_next = 1;
     tree[2].ob_head = 3;
-    tree[2].ob_tail = 3;
-    
-    // menu 1 (DESK)
-    tree[3].ob_type = 32 /* I_TITLE */;
-    tree[3].ob_spec = (void *)"   DESK   ";
-    tree[3].ob_width = 10;
-    tree[3].ob_height = 0x301;
-    tree[3].ob_next = 2;
-   
-    // THE SCREEN
-    tree[4].ob_type = 25 /* I_BOX */;
-    tree[4].ob_y = 0x301;
-    tree[4].ob_width = 23;
-    tree[4].ob_height = 8;
-    tree[4].ob_head = 5;
-    tree[4].ob_tail = 5;
-    tree[4].ob_next = 0;
+    tree[2].ob_tail = 4;
+    tree[2].ob_flags = 0;
+    tree[2].ob_state = 0;
+    tree[2].ob_x = (2 * 8) + 0;
+    tree[2].ob_y = (0 * 16) + 0;
+    tree[2].ob_width = (15 * 8) + 0;
+    tree[2].ob_height = (1 * 16) + 3;
+    tree[2].ob_spec = (void *)0x00000000;
 
-    // dropdown 1 (DESK)
-    tree[5].ob_type = 20 /* G_BOX */;
-    tree[5].ob_x = 2;
-    tree[5].ob_y = 0;
-    tree[5].ob_spec = (void *)0xff1100;
-    tree[5].ob_width = 25;
-    tree[5].ob_height = 8;
-    tree[5].ob_next = 4;
+    tree[3].ob_type = 32;
+    tree[3].ob_next = 4;
+    tree[3].ob_head = -1;
+    tree[3].ob_tail = -1;
+    tree[3].ob_flags = 0;
+    tree[3].ob_state = 0;
+    tree[3].ob_x = (0 * 8) + 0;
+    tree[3].ob_y = (0 * 16) + 0;
+    tree[3].ob_width = (9 * 8) + 0;
+    tree[3].ob_height = (1 * 16) + 3;
+    tree[3].ob_spec = (void *)" Program";
+
+    tree[4].ob_type = 32;
+    tree[4].ob_next = 2;
+    tree[4].ob_head = -1;
+    tree[4].ob_tail = -1;
+    tree[4].ob_flags = 0;
+    tree[4].ob_state = 0;
+    tree[4].ob_x = (9 * 8) + 0;
+    tree[4].ob_y = (0 * 16) + 0;
+    tree[4].ob_width = (6 * 8) + 0;
+    tree[4].ob_height = (1 * 16) + 3;
+    tree[4].ob_spec = (void *)" File";
+
+    tree[5].ob_type = 25;
+    tree[5].ob_next = 0;
     tree[5].ob_head = 6;
-    tree[5].ob_tail = 13;
-    
-    // DESK menu items 6,7,8,9,10,11,12,13
-    for (int i = 0; i < 8; i++) {
-        tree[6 + i].ob_type = 28; // G_STRING
-        tree[6 + i].ob_next = 6 + i + 1;
-        tree[6 + i].ob_y = i;
-        tree[6 + i].ob_width = 21;
-        tree[6 + i].ob_height = 1;
-    }
-    tree[7].ob_state = 8;
-    tree[13].ob_next = 5;
+    tree[5].ob_tail = 15;
+    tree[5].ob_flags = 0;
+    tree[5].ob_state = 0;
+    tree[5].ob_x = (0 * 8) + 0;
+    tree[5].ob_y = (1 * 16) + 3;
+    tree[5].ob_width = (23 * 8) + 0;
+    tree[5].ob_height = (8 * 16) + 0;
+    tree[5].ob_spec = (void *)0x00000000;
 
-    tree[6].ob_spec = (void *)"Something";
-    tree[7].ob_spec = (void *)"-----";
-    tree[8].ob_spec = (void *)"~~~~~~~~~~~~~~~1";
-    tree[9].ob_spec = (void *)"~~~~~~~~~~~~~~~2";
-    tree[10].ob_spec = (void *)"~~~~~~~~~~~~~~~3";
-    tree[11].ob_spec = (void *)"~~~~~~~~~~~~~~~4";            
-    tree[12].ob_spec = (void *)"~~~~~~~~~~~~~~~5";
-    tree[13].ob_spec = (void *)"~~~~~~~~~~~~~~~6";
-#endif
+    tree[6].ob_type = 20;
+    tree[6].ob_next = 15;
+    tree[6].ob_head = 7;
+    tree[6].ob_tail = 14;
+    tree[6].ob_flags = 0;
+    tree[6].ob_state = 0;
+    tree[6].ob_x = (2 * 8) + 0;
+    tree[6].ob_y = (0 * 16) + 0;
+    tree[6].ob_width = (21 * 8) + 0;
+    tree[6].ob_height = (8 * 16) + 0;
+    tree[6].ob_spec = (void *)0x00ff1100;
 
-tree[0].ob_type = 20; //25;
-tree[0].ob_next = -1;
-tree[0].ob_head = 1;
-tree[0].ob_tail = 5;
-tree[0].ob_flags = 0;
-tree[0].ob_state = 0;
-tree[0].ob_x = 0x0;
-tree[0].ob_y = 0x0;
-tree[0].ob_width = 0x50;
-tree[0].ob_height = 0x19;
-tree[0].ob_spec = (void *)0x00000000;
+    tree[7].ob_type = 28;
+    tree[7].ob_next = 8;
+    tree[7].ob_head = -1;
+    tree[7].ob_tail = -1;
+    tree[7].ob_flags = 0;
+    tree[7].ob_state = 0;
+    tree[7].ob_x = (0 * 8) + 0;
+    tree[7].ob_y = (0 * 16) + 0;
+    tree[7].ob_width = (21 * 8) + 0;
+    tree[7].ob_height = (1 * 16) + 0;
+    tree[7].ob_spec = (void *)"  Your message";
 
-tree[1].ob_type = 20;
-tree[1].ob_next = 5;
-tree[1].ob_head = 2;
-tree[1].ob_tail = 2;
-tree[1].ob_flags = 0;
-tree[1].ob_state = 0;
-tree[1].ob_x = 0x0;
-tree[1].ob_y = 0x0;
-tree[1].ob_width = 0x50;
-tree[1].ob_height = 0x201;
-tree[1].ob_spec = (void *)0x00001100;
+    tree[8].ob_type = 28;
+    tree[8].ob_next = 9;
+    tree[8].ob_head = -1;
+    tree[8].ob_tail = -1;
+    tree[8].ob_flags = 0;
+    tree[8].ob_state = 8;
+    tree[8].ob_x = (0 * 8) + 0;
+    tree[8].ob_y = (1 * 16) + 0;
+    tree[8].ob_width = (21 * 8) + 0;
+    tree[8].ob_height = (1 * 16) + 0;
+    tree[8].ob_spec = (void *)"---------------------";
 
-tree[2].ob_type = 25;
-tree[2].ob_next = 1;
-tree[2].ob_head = 3;
-tree[2].ob_tail = 4;
-tree[2].ob_flags = 0;
-tree[2].ob_state = 0;
-tree[2].ob_x = 0x2;
-tree[2].ob_y = 0x0;
-tree[2].ob_width = 0xf;
-tree[2].ob_height = 0x301;
-tree[2].ob_spec = (void *)0x00000000;
+    tree[9].ob_type = 28;
+    tree[9].ob_next = 10;
+    tree[9].ob_head = -1;
+    tree[9].ob_tail = -1;
+    tree[9].ob_flags = 0;
+    tree[9].ob_state = 0;
+    tree[9].ob_x = (0 * 8) + 0;
+    tree[9].ob_y = (2 * 16) + 0;
+    tree[9].ob_width = (21 * 8) + 0;
+    tree[9].ob_height = (1 * 16) + 0;
+    tree[9].ob_spec = (void *)"  Desk Accessory 1  ";
 
-tree[3].ob_type = 32;
-tree[3].ob_next = 4;
-tree[3].ob_head = -1;
-tree[3].ob_tail = -1;
-tree[3].ob_flags = 0;
-tree[3].ob_state = 0;
-tree[3].ob_x = 0x0;
-tree[3].ob_y = 0x0;
-tree[3].ob_width = 0x9;
-tree[3].ob_height = 0x301;
-tree[3].ob_spec = (void *)" Program";
+    tree[10].ob_type = 28;
+    tree[10].ob_next = 11;
+    tree[10].ob_head = -1;
+    tree[10].ob_tail = -1;
+    tree[10].ob_flags = 0;
+    tree[10].ob_state = 0;
+    tree[10].ob_x = (0 * 8) + 0;
+    tree[10].ob_y = (3 * 16) + 0;
+    tree[10].ob_width = (21 * 8) + 0;
+    tree[10].ob_height = (1 * 16) + 0;
+    tree[10].ob_spec = (void *)"  Desk Accessory 2";
 
-tree[4].ob_type = 32;
-tree[4].ob_next = 2;
-tree[4].ob_head = -1;
-tree[4].ob_tail = -1;
-tree[4].ob_flags = 0;
-tree[4].ob_state = 0;
-tree[4].ob_x = 0x9;
-tree[4].ob_y = 0x0;
-tree[4].ob_width = 0x6;
-tree[4].ob_height = 0x301;
-tree[4].ob_spec = (void *)" File";
+    tree[11].ob_type = 28;
+    tree[11].ob_next = 12;
+    tree[11].ob_head = -1;
+    tree[11].ob_tail = -1;
+    tree[11].ob_flags = 0;
+    tree[11].ob_state = 0;
+    tree[11].ob_x = (0 * 8) + 0;
+    tree[11].ob_y = (4 * 16) + 0;
+    tree[11].ob_width = (21 * 8) + 0;
+    tree[11].ob_height = (1 * 16) + 0;
+    tree[11].ob_spec = (void *)"  Desk Accessory 3";
 
-tree[5].ob_type = 25;
-tree[5].ob_next = 0;
-tree[5].ob_head = 6;
-tree[5].ob_tail = 15;
-tree[5].ob_flags = 0;
-tree[5].ob_state = 0;
-tree[5].ob_x = 0x0;
-tree[5].ob_y = 0x301;
-tree[5].ob_width = 0x17;
-tree[5].ob_height = 0x8;
-tree[5].ob_spec = (void *)0x00000000;
+    tree[12].ob_type = 28;
+    tree[12].ob_next = 13;
+    tree[12].ob_head = -1;
+    tree[12].ob_tail = -1;
+    tree[12].ob_flags = 0;
+    tree[12].ob_state = 0;
+    tree[12].ob_x = (0 * 8) + 0;
+    tree[12].ob_y = (5 * 16) + 0;
+    tree[12].ob_width = (21 * 8) + 0;
+    tree[12].ob_height = (1 * 16) + 0;
+    tree[12].ob_spec = (void *)"  Desk Accessory 4";
 
-tree[6].ob_type = 20;
-tree[6].ob_next = 15;
-tree[6].ob_head = 7;
-tree[6].ob_tail = 14;
-tree[6].ob_flags = 0;
-tree[6].ob_state = 0;
-tree[6].ob_x = 0x2;
-tree[6].ob_y = 0x0;
-tree[6].ob_width = 0x15;
-tree[6].ob_height = 0x8;
-tree[6].ob_spec = (void *)0x00ff1100;
+    tree[13].ob_type = 28;
+    tree[13].ob_next = 14;
+    tree[13].ob_head = -1;
+    tree[13].ob_tail = -1;
+    tree[13].ob_flags = 0;
+    tree[13].ob_state = 0;
+    tree[13].ob_x = (0 * 8) + 0;
+    tree[13].ob_y = (6 * 16) + 0;
+    tree[13].ob_width = (21 * 8) + 0;
+    tree[13].ob_height = (1 * 16) + 0;
+    tree[13].ob_spec = (void *)"  Desk Accessory 5";
 
-tree[7].ob_type = 28;
-tree[7].ob_next = 8;
-tree[7].ob_head = -1;
-tree[7].ob_tail = -1;
-tree[7].ob_flags = 0;
-tree[7].ob_state = 0;
-tree[7].ob_x = 0x0;
-tree[7].ob_y = 0x0;
-tree[7].ob_width = 0x15;
-tree[7].ob_height = 0x1;
-tree[7].ob_spec = (void *)"  Your message";
+    tree[14].ob_type = 28;
+    tree[14].ob_next = 6;
+    tree[14].ob_head = -1;
+    tree[14].ob_tail = -1;
+    tree[14].ob_flags = 0;
+    tree[14].ob_state = 0;
+    tree[14].ob_x = (0 * 8) + 0;
+    tree[14].ob_y = (7 * 16) + 0;
+    tree[14].ob_width = (21 * 8) + 0;
+    tree[14].ob_height = (1 * 16) + 0;
+    tree[14].ob_spec = (void *)"  Desk Accessory 6";
 
-tree[8].ob_type = 28;
-tree[8].ob_next = 9;
-tree[8].ob_head = -1;
-tree[8].ob_tail = -1;
-tree[8].ob_flags = 0;
-tree[8].ob_state = 8;
-tree[8].ob_x = 0x0;
-tree[8].ob_y = 0x1;
-tree[8].ob_width = 0x15;
-tree[8].ob_height = 0x1;
-tree[8].ob_spec = (void *)"---------------------";
+    tree[15].ob_type = 20;
+    tree[15].ob_next = 5;
+    tree[15].ob_head = 16;
+    tree[15].ob_tail = 16;
+    tree[15].ob_flags = 0;
+    tree[15].ob_state = 0;
+    tree[15].ob_x = (11 * 8) + 0;
+    tree[15].ob_y = (0 * 16) + 0;
+    tree[15].ob_width = (7 * 8) + 0;
+    tree[15].ob_height = (1 * 16) + 0;
+    tree[15].ob_spec = (void *)0x00ff1100;
 
-tree[9].ob_type = 28;
-tree[9].ob_next = 10;
-tree[9].ob_head = -1;
-tree[9].ob_tail = -1;
-tree[9].ob_flags = 0;
-tree[9].ob_state = 0;
-tree[9].ob_x = 0x0;
-tree[9].ob_y = 0x2;
-tree[9].ob_width = 0x15;
-tree[9].ob_height = 0x1;
-tree[9].ob_spec = (void *)"  Desk Accessory 1  ";
+    tree[16].ob_type = 28;
+    tree[16].ob_next = 15;
+    tree[16].ob_head = -1;
+    tree[16].ob_tail = -1;
+    tree[16].ob_flags = 32;
+    tree[16].ob_state = 0;
+    tree[16].ob_x = (0 * 8) + 0;
+    tree[16].ob_y = (0 * 16) + 0;
+    tree[16].ob_width = (7 * 8) + 0;
+    tree[16].ob_height = (1 * 16) + 0;
+    tree[16].ob_spec = (void *)"  Quit";
 
-tree[10].ob_type = 28;
-tree[10].ob_next = 11;
-tree[10].ob_head = -1;
-tree[10].ob_tail = -1;
-tree[10].ob_flags = 0;
-tree[10].ob_state = 0;
-tree[10].ob_x = 0x0;
-tree[10].ob_y = 0x3;
-tree[10].ob_width = 0x15;
-tree[10].ob_height = 0x1;
-tree[10].ob_spec = (void *)"  Desk Accessory 2";
+    //rsrc_load("TEST.RSC");
+    //OBJECT *menu;
+    //rsrc_gaddr(0, 0, &menu);
 
-tree[11].ob_type = 28;
-tree[11].ob_next = 12;
-tree[11].ob_head = -1;
-tree[11].ob_tail = -1;
-tree[11].ob_flags = 0;
-tree[11].ob_state = 0;
-tree[11].ob_x = 0x0;
-tree[11].ob_y = 0x4;
-tree[11].ob_width = 0x15;
-tree[11].ob_height = 0x1;
-tree[11].ob_spec = (void *)"  Desk Accessory 3";
-
-tree[12].ob_type = 28;
-tree[12].ob_next = 13;
-tree[12].ob_head = -1;
-tree[12].ob_tail = -1;
-tree[12].ob_flags = 0;
-tree[12].ob_state = 0;
-tree[12].ob_x = 0x0;
-tree[12].ob_y = 0x5;
-tree[12].ob_width = 0x15;
-tree[12].ob_height = 0x1;
-tree[12].ob_spec = (void *)"  Desk Accessory 4";
-
-tree[13].ob_type = 28;
-tree[13].ob_next = 14;
-tree[13].ob_head = -1;
-tree[13].ob_tail = -1;
-tree[13].ob_flags = 0;
-tree[13].ob_state = 0;
-tree[13].ob_x = 0x0;
-tree[13].ob_y = 0x6;
-tree[13].ob_width = 0x15;
-tree[13].ob_height = 0x1;
-tree[13].ob_spec = (void *)"  Desk Accessory 5";
-
-tree[14].ob_type = 28;
-tree[14].ob_next = 6;
-tree[14].ob_head = -1;
-tree[14].ob_tail = -1;
-tree[14].ob_flags = 0;
-tree[14].ob_state = 0;
-tree[14].ob_x = 0x0;
-tree[14].ob_y = 0x7;
-tree[14].ob_width = 0x15;
-tree[14].ob_height = 0x1;
-tree[14].ob_spec = (void *)"  Desk Accessory 6";
-
-tree[15].ob_type = 20;
-tree[15].ob_next = 5;
-tree[15].ob_head = 16;
-tree[15].ob_tail = 16;
-tree[15].ob_flags = 0;
-tree[15].ob_state = 0;
-tree[15].ob_x = 0xb;
-tree[15].ob_y = 0x0;
-tree[15].ob_width = 0x7;
-tree[15].ob_height = 0x1;
-tree[15].ob_spec = (void *)0x00ff1100;
-
-tree[16].ob_type = 28;
-tree[16].ob_next = 15;
-tree[16].ob_head = -1;
-tree[16].ob_tail = -1;
-tree[16].ob_flags = 32;
-tree[16].ob_state = 0;
-tree[16].ob_x = 0x0;
-tree[16].ob_y = 0x0;
-tree[16].ob_width = 0x7;
-tree[16].ob_height = 0x1;
-tree[16].ob_spec = (void *)"  Quit";
-
-
-    rsrc_load("TEST.RSC");
-    
-    OBJECT *menu;
-    rsrc_gaddr(0, 0, &menu);
-
-    char buf[1024];
-    for (int i = 0; i <= 16; i++)
-    {
-#if 0            
-        printf("%02x - %04x %04x %04x\n", 
-            i,
-            (uint16_t)menu[i].ob_next,
-            (uint16_t)menu[i].ob_head,
-            (uint16_t)menu[i].ob_tail
-        );
-#else
-        printf("%02x - %04x %04x %04x    %04x %04x %04x\n", 
-            i,
-            (uint16_t)tree[i].ob_next,
-            (uint16_t)tree[i].ob_head,
-            (uint16_t)tree[i].ob_tail,
-            (uint16_t)menu[i].ob_next,
-            (uint16_t)menu[i].ob_head,
-            (uint16_t)menu[i].ob_tail
-            // these compare equal.
-        );
-#endif
-    }
-
-
-    graf_mouse(256, (MFORM*)NULL);
-//    menu_bar(tree, MENU_SHOW);
-    menu_bar(menu, MENU_SHOW);
-    graf_mouse(257, (MFORM*)NULL);
+    //graf_mouse(256, (MFORM*)NULL);
+    menu_bar(tree, MENU_SHOW);
+    //graf_mouse(257, (MFORM*)NULL);
 }
 
 Application::~Application() {
-    //menu_bar(&menu_bar, MENU_HIDE);
+    menu_bar(tree, MENU_HIDE);
     v_clsvwk(screen_vhandle);
     appl_exit();
 }
@@ -421,6 +299,14 @@ void Application::run()
         case WM_MOVED:
             w = find_window_by_handle(msg[3]);
             w->size(msg[4], msg[5], msg[6], msg[7]);
+            break;
+        case MN_SELECTED:
+            //const char *buf = "[1][Menu selected X X!][ OK ]";
+            //((char *)buf)[18] = '0' + msg[3];
+            //((char *)buf)[20] = '0' + msg[4];
+            //form_alert(1, buf);
+            if (msg[4] == 16)
+                quit();
             break;
         }
     }

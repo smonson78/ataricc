@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	SmonsonWindow simon;
 	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
-	simon.size(300, 50, 200, 150);
+	simon.size(400, 50, 200, 150);
 	app.add_window(&simon);
 
 	Window simon2;

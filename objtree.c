@@ -48,10 +48,22 @@ void disp_obj(OBJECT *p, int i)
     printf("tree[%d].ob_state = %d;\n", i, WORD(x->ob_state));
 
 
-    printf("tree[%d].ob_x = 0x%x;\n", i, WORD(x->ob_x));
-    printf("tree[%d].ob_y = 0x%x;\n", i, WORD(x->ob_y));
-    printf("tree[%d].ob_width = 0x%x;\n", i, WORD(x->ob_width));
-    printf("tree[%d].ob_height = 0x%x;\n", i, WORD(x->ob_height));
+    printf("tree[%d].ob_x = (%d * 8) + %d;\n", 
+        i, 
+        WORD(x->ob_x) & 0xFF, 
+        WORD(x->ob_x) >> 8);
+    printf("tree[%d].ob_y = (%d * 16) + %d;\n", 
+        i, 
+        WORD(x->ob_y) & 0xFF, 
+        WORD(x->ob_y) >> 8);
+    printf("tree[%d].ob_width = (%d * 8) + %d;\n",
+        i, 
+        WORD(x->ob_width) & 0xFF, 
+        WORD(x->ob_width) >> 8);
+    printf("tree[%d].ob_height = (%d * 16) + %d;\n",
+        i, 
+        WORD(x->ob_height) & 0xFF, 
+        WORD(x->ob_height) >> 8);
 
     switch (WORD(x->ob_type))
     {

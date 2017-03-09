@@ -19,6 +19,8 @@ $(TARGET): test.elf
 	/home/simon/dev/vlink/vlink test.elf -b ataritos -o $(TARGET)
 	@$(RM) ready.o
 
+$(APPLIBS): app_app.h app_window.h aes.h tos.h aes_window.h
+
 clean:
 	$(RM) $(TARGET) *.o *.elf test.bin
 	$(RM) *~

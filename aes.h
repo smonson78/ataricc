@@ -6,6 +6,7 @@
 
 /* Event types */
 typedef enum {
+    MN_SELECTED = 10,
     WM_REDRAW = 20,
     WM_TOPPED,
     WM_CLOSED,
