@@ -1,6 +1,16 @@
 #include <stdint.h>
+#include <libc.h>
 
 extern void *stack;
+int main(int argc, char **argv);
+
+int _start2()
+{
+    char *args[1];
+    args[0] = "";
+    malloc_init(256 * 1024); // Alloc 256k for now.
+    return main(1, args);
+}
 
 __attribute__ ((noreturn))
 __attribute__ ((section(".entry")))
@@ -20,7 +30,7 @@ void _start()
             "move.w    #0x4a,-(%%sp)\n\t" // ; Mshrink
             "trap      #1\n\t"            //; Call GEMDOS
             "lea       0xc(%%sp),%%sp\n\t"// Correct stack
-            "jsr       main\n\t"          // Call main program
+            "jsr       _start2\n\t"          // Call main program
             "move.w    %%d0,-(%%sp)\n\t"  //    ; Return value of the program
             "move.w    #0x4c,-(%%sp)\n\t" //  ; Pterm
             "trap      #1\n\t"            //; Call GEMDOS

@@ -4,6 +4,23 @@
 
 FILE *stdout = (FILE *)1;
 
+struct memblock_t *malloc_head;
+size_t malloc_total_size;
+
+void malloc_init(size_t memsize)
+{
+    malloc_head = (struct memblock_t *)Malloc(memsize);
+    if (malloc_head) {
+        malloc_total_size = memsize;
+        malloc_head->size = memsize - sizeof(struct memblock_t);
+        malloc_head->next = NULL;
+        malloc_head->prev = NULL;
+        malloc_head->used = 0;
+    }
+    else
+        malloc_total_size = 0;
+}
+
 static int16_t fmt_int(uint32_t val, int16_t base, int16_t neg, char *buf)
 {
 	static const char *digits = "0123456789abcdef";
@@ -190,12 +207,77 @@ void exit(uint16_t retval)
 	_exit(retval);
 }
 
-void malloc() {
-    printf("malloc called\n");
+void *malloc(size_t size) {
+    struct memblock_t *p, *next;
+    
+    if (size < MALLOC_MIN_ALLOCATION)
+        size = MALLOC_MIN_ALLOCATION;
+
+    //printf("malloc called\n");
+    //printf("  searching for a block of size %d\n", size);
+
+    p = malloc_head;
+    while (p && (p->size < size || p->used)) {
+        //printf("  skipping block of size %d\n", p->size);
+        p = p->next;
+    }
+    
+    if (!p) {
+        //printf("  insufficient free memory available.\n");
+        return 0;
+    }
+    
+    //printf("  Found unused block of size %d\n", p->size);
+    
+    if (p->size > size + sizeof(struct memblock_t) + MALLOC_MIN_ALLOCATION) {
+        //printf("  Block is big enough to split (excess: %d bytes)\n",
+        //    p->size - sizeof(struct memblock_t) - size);
+
+        next = (void *)p + sizeof(struct memblock_t) + size;
+        next->prev = p;
+        next->next = p->next;
+        next->size = p->size - size - sizeof(struct memblock_t);
+        p->next = next;
+        p->size = size;
+        //printf("  p = %p\n", p);
+        //printf("  next = %p\n", next);
+    }
+    
+    p->used = 1;
+    return (void *)p + sizeof(struct memblock_t);
 }
 
 void free (void *m) {
-    printf("free called\n");
+    //printf("free called (%p)\n", m);
+    struct memblock_t *p = m - sizeof(struct memblock_t);
+    struct memblock_t *other;
+    
+    //printf("  freeing block at %p\n", p);
+    if (p->used != 1) {
+        printf("  error: free() called on unknown block %p\n", p);
+        return;
+    }
+    
+    if (p->prev && p->prev->used == 0) {
+        //printf("  prev block is free, can combine\n");
+        other = p->prev;
+        other->next = p->next;
+        other->size += p->size + sizeof(struct memblock_t);
+        if (p->next)
+            p->next->prev = other;
+        p = other;
+    }
+    
+    if (p->next && p->next->used == 0) {
+        //printf("  next block is free, can combine\n");
+        other = p->next;
+        p->next = other->next;
+        p->size += other->size + sizeof(struct memblock_t);
+        if (p->next)
+            p->next->prev = p;
+    }
+    
+    p->used = 0;
 }
 
 void abort() {

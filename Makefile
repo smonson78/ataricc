@@ -8,6 +8,7 @@ LDFLAGS=-lgcc
 
 INSTALL=/home/simon/dev/XSteem/hd/C
 TARGET=TEST.PRG
+# This is where m68k-elf-gcc was built
 LIBGCC=/home/simon/gcc-m68k/lib/gcc/m68k-elf/5.3.0/m68000/libgcc.a
 TOSLIBS=tos.o aes.o xbios.o aes_window.o
 APPLIBS=app_app.o app_window.o
