@@ -6,7 +6,7 @@
 #define MALLOC_MIN_ALLOCATION 32
 
 typedef uint16_t FILE;
-typedef uint32_t size_t;
+typedef unsigned long int size_t;
 #define NULL ((void *)0)
 
 extern FILE *stdout;

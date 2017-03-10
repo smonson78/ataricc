@@ -30,6 +30,19 @@ class SmonsonWindow : public Window {
     }
 };
 
+void *operator new(size_t n)
+{
+    //printf("operator new\n");
+    return malloc(n);
+}
+
+void operator delete(void *p)
+{
+    //printf("operator delete\n");
+    free(p);
+}
+
+
 int main(int argc, char **argv)
 {
     Application app;
@@ -37,19 +50,22 @@ int main(int argc, char **argv)
 	SmonsonWindow simon;
 	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
-	simon.size(400, 50, 200, 150);
+	simon.size(350, 50, 200, 150);
 	app.add_window(&simon);
 
-	Window simon2;
-	app.add_window(&simon2);
-	simon2.setstyle(WIND_NAME|WIND_MOVER);
-	simon2.settitle("Not-smonson");
-	simon2.size(400, 80, 200, 150);
+	Window *simon2 = new Window();
+	app.add_window(simon2);
+	simon2->setstyle(WIND_NAME|WIND_MOVER);
+	simon2->settitle("Not-smonson");
+	simon2->size(400, 80, 200, 150);
 
-	simon2.open();
+	simon2->open();
 	simon.open();
-
+	
     // Main loop	
     app.run();
-
+    
+    delete simon2;
+    
+    return 0;
 }
