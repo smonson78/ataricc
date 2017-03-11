@@ -28,6 +28,7 @@ class Window {
         
     public:
     Window();
+    virtual ~Window();
     void set_app(Application *a); // called by application on setup
     void settitle(const char *t);
     void setstyle(int16_t s);

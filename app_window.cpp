@@ -17,6 +17,9 @@ Window::Window() {
     title = "";
 }
 
+Window::~Window() {
+}
+
 void Window::update() {
     // Calculate work area from window dimensions
     wind_calc(WC_WORK, WIND_BASIC,
