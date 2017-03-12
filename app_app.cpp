@@ -3,6 +3,8 @@
 
 Application::Application() {
 
+	//printf("Application constructed\n");
+
     // Clear window list
     for (int16_t i = 0; i < MAX_WINDOWS; i++)
         windows[i] = (Window *)NULL;
@@ -23,6 +25,7 @@ Application::Application() {
     screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
     screen_vhandle = open_vwork(screen_phandle);
 
+#if 1
     tree[0].ob_type = 25; // setting just this is fine
     tree[0].ob_next = -1; // setting this causes 2-bomb crash
     tree[0].ob_head = 1; // setting this also, 3 bombs
@@ -234,9 +237,13 @@ Application::Application() {
     //graf_mouse(256, (MFORM*)NULL);
     menu_bar(tree, MENU_SHOW);
     //graf_mouse(257, (MFORM*)NULL);
+#endif
 }
 
 Application::~Application() {
+
+	//printf("Application destructed\n");
+
     menu_bar(tree, MENU_HIDE);
     v_clsvwk(screen_vhandle);
     appl_exit();

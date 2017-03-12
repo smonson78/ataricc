@@ -1,15 +1,23 @@
 #include <stdint.h>
 #include <libc.h>
+//#include <tos.h>
 
 extern void *stack;
 int main(int argc, char **argv);
+void __do_global_ctors_aux();
+void __do_global_dtors_aux();
 
-int _start2()
+int __libc_start_main()
 {
     char *args[1];
     args[0] = "";
+    __do_global_ctors_aux();
     malloc_init(256 * 1024); // Alloc 256k for now.
-    return main(1, args);
+    int result = main(1, args);
+    __do_global_dtors_aux();
+
+	//Cnecin();
+    return result;
 }
 
 __attribute__ ((noreturn))
@@ -30,7 +38,7 @@ void _start()
             "move.w    #0x4a,-(%%sp)\n\t" // ; Mshrink
             "trap      #1\n\t"            //; Call GEMDOS
             "lea       0xc(%%sp),%%sp\n\t"// Correct stack
-            "jsr       _start2\n\t"          // Call main program
+            "jsr       __libc_start_main\n\t"          // Call main program
             "move.w    %%d0,-(%%sp)\n\t"  //    ; Return value of the program
             "move.w    #0x4c,-(%%sp)\n\t" //  ; Pterm
             "trap      #1\n\t"            //; Call GEMDOS

@@ -4,16 +4,17 @@ OBJCOPY=m68k-elf-objcopy
 
 CFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -ffreestanding
 CXXFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti -fno-implicit-templates -ffreestanding
-LDFLAGS=-lgcc
+LDLIBS=-lgcc
+LDFLAGS=-nostdlib
 
-INSTALL=/home/simon/dev/XSteem/hd/C
+INSTALL=/home/simon/dev/atari-hd
 TARGET=TEST.PRG
 # This is where m68k-elf-gcc was built
 #LIBGCC=/home/simon/gcc-m68k/lib/gcc/m68k-elf/5.3.0/m68000/libgcc.a
 LIBGCC:=$(shell $(CXX) $(CFLAGS) --print-libgcc-file-name)
 TOSLIBS=tos.o aes.o xbios.o aes_window.o
 APPLIBS=app_app.o app_window.o
-ALLLIBS=crt0.o libc.o $(TOSLIBS) $(APPLIBS) $(LIBGCC)
+ALLLIBS=crt0.o crtstuff.o libc.o $(TOSLIBS) $(APPLIBS)
 
 $(TARGET): test.elf
 	@# Strip out .discard section and make .text writable before passing to vlink
@@ -38,7 +39,8 @@ info: debug
 elf: test.elf
 test.elf: test.o $(ALLLIBS)
 	@# Run linker, generate a relocatable object file of the whole project
-	m68k-elf-ld -Tatari.ld --relocatable $^ -o test.elf
+	#m68k-elf-ld -Tatari.ld --relocatable $^ -o test.elf
+	$(CC) -Tatari.ld -Wl,--relocatable $(LDFLAGS) $^ $(LDLIBS) -o test.elf
 
 debug: test.o $(ALLLIBS)
 	m68k-elf-ld -Tdebug.ld $^ -o info.elf

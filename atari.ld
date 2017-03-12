@@ -9,9 +9,17 @@ SECTIONS {
 		PROVIDE(_etext = .);
 	}
 	.data : {
-		*(.rodata*)
 		*(.data*)
-		. = ALIGN(2);
+		*(.rodata*)
+		. = ALIGN(4);
+		PROVIDE(__CTOR_LIST__ = .);
+		crtstuff.o(.ctors)
+		*(.ctors)
+		PROVIDE(__CTOR_END__ = .);
+		PROVIDE(__DTOR_LIST__ = .);
+		*(.dtors)
+		crtstuff.o(.dtors)
+		PROVIDE(__DTOR_END__ = .);
 		PROVIDE(_edata = .);
 	}
 	.bss : {
