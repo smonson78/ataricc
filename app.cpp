@@ -1,4 +1,4 @@
-#include "app_app.h"
+#include "app.h"
 #include "app_window.h"
 
 Application::Application() {
@@ -26,9 +26,9 @@ Application::Application() {
     screen_vhandle = open_vwork(screen_phandle);
 
 #if 1
-    tree[0].ob_type = 25; // setting just this is fine
-    tree[0].ob_next = -1; // setting this causes 2-bomb crash
-    tree[0].ob_head = 1; // setting this also, 3 bombs
+    tree[0].ob_type = 25;
+    tree[0].ob_next = -1;
+    tree[0].ob_head = 1;
     tree[0].ob_tail = 5;
     tree[0].ob_flags = 0;
     tree[0].ob_state = 0;

@@ -1,11 +1,10 @@
+
 extern "C" {
-#include <tos.h>
-#include <aes.h>
-#include <aes_window.h>
+#include <gem.h>
 #include <libc.h>
 }
 
-#include "app_app.h"
+#include "app.h"
 
 /*
 void show_malloc()
@@ -55,15 +54,10 @@ class SmonsonWindow : public Window {
     }
 };
 
-Application app;
 
 int main(int argc, char **argv)
 {
-
-	//printf("app @ %p\n", app);
-/*
-    Application app;
-*/
+	Application app;
 	
 	SmonsonWindow simon;
 	simon.setstyle(WIND_BASIC);
@@ -80,17 +74,13 @@ int main(int argc, char **argv)
 	simon2->open();
 	simon.open();
 	
+	MenuBar menubar;
+	Menu programMenu("Smonson");
+	MenuItem about("About...", (menu_callback)0);
+	//ProgramMenu.addMenuItem("Your Message");
     // Main loop
     app.run();
    
-
-	//int *foo = new int[100];
-
-	//show_malloc();
-
-	//delete[] foo;
-	
     delete simon2;
-    //Cnecin();
     return 0;
 }

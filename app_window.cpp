@@ -1,3 +1,4 @@
+
 extern "C" {
 #include <aes.h>
 #include <aes_window.h>
@@ -6,7 +7,7 @@ extern "C" {
 #include <libc.h>
 }
 
-#include "app_app.h"
+#include "app.h"
 #include "app_window.h"
 
 Window::Window() {

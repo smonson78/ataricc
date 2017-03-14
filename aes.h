@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <aes_object.h>
+#include <aes_window.h>
 
 /* Event types */
 typedef enum {
@@ -109,7 +110,7 @@ void v_circle(int16_t handle, int16_t x, int16_t y, int16_t radius);
 
 void vs_clip(int16_t handle, int16_t clip_flag, int16_t *pxyarray);
 
-// resource
+// resource files
 int16_t rsrc_free();
 int16_t rsrc_gaddr(int16_t re_gtype, int16_t re_gindex, OBJECT **gaddr);
 int16_t rsrc_load (const char *re_lpfname);

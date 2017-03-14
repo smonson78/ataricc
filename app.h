@@ -1,5 +1,5 @@
-#ifndef __APP_APP_H
-#define __APP_APP_H
+#ifndef __APP_H
+#define __APP_H
 
 extern "C" {
 #include <stdint.h>
@@ -9,6 +9,9 @@ extern "C" {
 #include "aes_object.h"
 
 #include "app_window.h"
+#include "MenuItem.h"
+#include "MenuBar.h"
+#include "Menu.h"
 
 #define MAX_WINDOWS 16
 
