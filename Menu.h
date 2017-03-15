@@ -9,6 +9,7 @@ public:
 	virtual ~Menu();
 private:
 	const char *title;
+	Menu *next;
 };
 
 #endif

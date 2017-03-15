@@ -76,7 +76,10 @@ int main(int argc, char **argv)
 	
 	MenuBar menubar;
 	Menu programMenu("Smonson");
-	MenuItem about("About...", (menu_callback)0);
+	Menu fileMenu("File");
+	menubar.addMenu(&programMenu);
+	menubar.addMenu(&fileMenu);
+	//MenuItem about("About...", (menu_callback)0);
 	//ProgramMenu.addMenuItem("Your Message");
     // Main loop
     app.run();

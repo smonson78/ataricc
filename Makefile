@@ -3,7 +3,7 @@ CXX=m68k-elf-g++
 OBJCOPY=m68k-elf-objcopy
 
 CFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -ffreestanding
-CXXFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti -fno-implicit-templates -ffreestanding
+CXXFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti -ffreestanding
 LDLIBS=-lgcc
 LDFLAGS=-nostdlib
 
@@ -11,7 +11,7 @@ INSTALL=/home/simon/dev/atari-hd
 TARGET=TEST.PRG
 LIBGCC:=$(shell $(CXX) $(CFLAGS) --print-libgcc-file-name)
 TOSLIBS=tos.o aes.o xbios.o aes_window.o
-APPLIBS=app.o app_window.o MenuBar.o Menu.o MenuItem.o
+APPLIBS=app.o app_window.o MenuBar.o Menu.o MenuItem.o LinkedList.o
 ALLLIBS=crt0.o crtstuff.o libc.o $(TOSLIBS) $(APPLIBS)
 
 all: $(TARGET)
