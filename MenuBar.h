@@ -9,7 +9,7 @@ public:
 	MenuBar();
 	virtual ~MenuBar();
 	void addMenu(Menu *menu);
-private:
+//private:
 	smonson::LinkedList<Menu> contents;
 };
 

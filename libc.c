@@ -207,27 +207,37 @@ void exit(uint16_t retval)
 	_exit(retval);
 }
 
+//#define MALLOC_DEBUG
 void *malloc(size_t size) {
     struct memblock_t *p, *next;
     
     if (size < MALLOC_MIN_ALLOCATION)
         size = MALLOC_MIN_ALLOCATION;
 
-    //printf("malloc called\n");
-    //printf("  searching for a block of size %d\n", size);
+#if defined MALLOC_DEBUG
+    printf("malloc called\n");
+    printf("  searching for a block of size %d\n", size);
+#endif
 
     p = malloc_head;
     while (p && (p->size < size || p->used)) {
-        //printf("  skipping block of size %d\n", p->size);
-        p = p->next;
+
+#if defined MALLOC_DEBUG
+        printf("  skipping block of size %d\n", p->size);
+#endif
+    	p = p->next;
     }
     
     if (!p) {
-        //printf("  insufficient free memory available.\n");
-        return 0;
+#if defined MALLOC_DEBUG
+        printf("  insufficient free memory available.\n");
+#endif
+    	return 0;
     }
-    
-    //printf("  Found unused block of size %d\n", p->size);
+
+#if defined MALLOC_DEBUG
+    printf("  Found unused block of size %d\n", p->size);
+#endif
     
     if (p->size > size + sizeof(struct memblock_t) + MALLOC_MIN_ALLOCATION) {
         //printf("  Block is big enough to split (excess: %d bytes)\n",
@@ -237,6 +247,7 @@ void *malloc(size_t size) {
         next->prev = p;
         next->next = p->next;
         next->size = p->size - size - sizeof(struct memblock_t);
+        next->used = 0;
         p->next = next;
         p->size = size;
         //printf("  p = %p\n", p);
@@ -254,7 +265,7 @@ void free (void *m) {
     
     //printf("  freeing block at %p\n", p);
     if (p->used != 1) {
-        printf("  error: free() called on unknown block %p\n", p);
+        printf("  error: free() called on unknown block %p (%d)\n", p, p->used);
         return;
     }
     

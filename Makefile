@@ -23,6 +23,7 @@ $(TARGET): test.elf
 	@$(RM) ready.o
 
 $(APPLIBS): app.h app_window.h aes.h tos.h aes_window.h
+$(APPLIBS): LinkedList.h LinkedListNode.h
 
 clean:
 	$(RM) $(TARGET) *.o *.elf test.bin

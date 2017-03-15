@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <libc.h>
-//#include <tos.h>
+#include <tos.h>
 
 extern void *stack;
 int main(int argc, char **argv);
@@ -16,7 +16,6 @@ int __libc_start_main()
     int result = main(1, args);
     __do_global_dtors_aux();
 
-	//Cnecin();
     return result;
 }
 

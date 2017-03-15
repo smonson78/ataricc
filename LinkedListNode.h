@@ -11,6 +11,16 @@ public:
 		this->next = 0;
 	}
 	~LinkedListNode() {}
+	T *getItem() {
+		return item;
+	}
+	LinkedListNode<T> *getNext() {
+		return next;
+	}
+	void add(T *item) {
+		next = new LinkedListNode(item);
+	}
+private:
 	T *item;
 	LinkedListNode *next;
 };

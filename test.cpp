@@ -5,8 +5,9 @@ extern "C" {
 }
 
 #include "app.h"
+#include "LinkedListNode.h"
 
-/*
+
 void show_malloc()
 {
     struct memblock_t *p = malloc_head;
@@ -17,8 +18,11 @@ void show_malloc()
         else
             printf("    null <-- ", p->prev);
         
-        printf("%p (%d)", p, p->size);
-        
+        if (p->used)
+        	printf("%p (%d) (USED)", p, p->size);
+        else
+        	printf("%p (%d)", p, p->size);
+
         if (p->next)
             printf(" --> %p", p->next);
         else
@@ -29,7 +33,7 @@ void show_malloc()
     }
     printf("\n");
 }
-*/
+
 
 class SmonsonWindow : public Window {
 
@@ -65,13 +69,13 @@ int main(int argc, char **argv)
 	simon.size(350, 50, 200, 150);
 	app.add_window(&simon);
 
-	Window *simon2 = new Window();
-	app.add_window(simon2);
-	simon2->setstyle(WIND_NAME|WIND_MOVER);
-	simon2->settitle("Not-smonson");
-	simon2->size(400, 80, 200, 150);
+	//Window *simon2 = new Window();
+	//app.add_window(simon2);
+	//simon2->setstyle(WIND_NAME|WIND_MOVER);
+	//simon2->settitle("Not-smonson");
+	//simon2->size(400, 80, 200, 150);
 
-	simon2->open();
+	//simon2->open();
 	simon.open();
 	
 	MenuBar menubar;
@@ -79,11 +83,25 @@ int main(int argc, char **argv)
 	Menu fileMenu("File");
 	menubar.addMenu(&programMenu);
 	menubar.addMenu(&fileMenu);
+
+	smonson::LinkedListNode<Menu> *p = menubar.contents.getHead();
+	//printf("menubar head is %p\n", p);
+	//p = new smonson::LinkedListNode<Menu>((Menu *)0);
+
+	//void *x = malloc(44);
+	//p = (smonson::LinkedListNode<Menu> *)malloc(32);
+	//printf("p is %p\n", p);
+	//while (p) {
+	//	Menu *item = p->getItem();
+	//	printf(" * %s\n", item->getTitle());
+	//	p = p->getNext();
+	//}
+	//show_malloc();
 	//MenuItem about("About...", (menu_callback)0);
 	//ProgramMenu.addMenuItem("Your Message");
     // Main loop
     app.run();
    
-    delete simon2;
+    //delete simon2;
     return 0;
 }

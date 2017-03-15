@@ -7,5 +7,5 @@ MenuBar::~MenuBar() {
 }
 
 void MenuBar::addMenu(Menu *menu) {
-	//contents.addItem(menu);
+	contents.addItem(menu);
 }
