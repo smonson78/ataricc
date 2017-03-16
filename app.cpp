@@ -25,7 +25,7 @@ Application::Application() {
     screen_phandle = graf_handle(&gr_wchar, &gr_hchar, &gr_wbox, &gr_hbox);
     screen_vhandle = open_vwork(screen_phandle);
 
-#if 1
+#if 0
     tree[0].ob_type = 25;
     tree[0].ob_next = -1;
     tree[0].ob_head = 1;
@@ -244,7 +244,7 @@ Application::~Application() {
 
 	//printf("Application destructed\n");
 
-    menu_bar(tree, MENU_HIDE);
+    //menu_bar(tree, MENU_HIDE);
     v_clsvwk(screen_vhandle);
     appl_exit();
 }

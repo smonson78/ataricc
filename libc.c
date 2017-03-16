@@ -21,7 +21,7 @@ void malloc_init(size_t memsize)
         malloc_total_size = 0;
 }
 
-static int16_t fmt_int(uint32_t val, int16_t base, int16_t neg, char *buf)
+static int16_t fmt_uint(uint32_t val, int16_t base, char *buf)
 {
 	static const char *digits = "0123456789abcdef";
 	char temp[10];
@@ -50,6 +50,44 @@ static int16_t fmt_int(uint32_t val, int16_t base, int16_t neg, char *buf)
 	return size;
 }
 
+static int16_t fmt_int(int32_t val, int16_t base, char *buf)
+{
+	static const char *digits = "0123456789abcdef";
+	char temp[10];
+	int16_t size = 0;
+	int16_t i;
+	int16_t neg;
+
+	/* Handle special case of 0 */
+	if (val == 0) {
+		buf[0] = '0';
+		buf[1] = 0;
+		return 1;
+	}
+
+	if (val < 0) {
+		neg = 1;
+		val = -val;
+		buf[0] = '-';
+	} else {
+		neg = 0;
+	}
+
+	/* Convert number to series of digits */
+	while (val)	{
+		temp[size++] = digits[val % base];
+		val /= base;
+	}
+
+	/* Reverse digits into output buffer */
+	for (i = 0; i < size; i++) {
+		buf[size - i - 1 + neg] = temp[i];
+	}
+
+	buf[size + neg] = 0;
+	return size + neg;
+}
+
 int vfprintf(FILE *stream, const char *format, va_list arg)
 {
 	char temp[11];
@@ -60,7 +98,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 		if (*format == '%')
 		{
 			int16_t width = 0;
-			int16_t neg = 0;
+			//int16_t neg = 0; // FIXME: printf is all broken
 			int16_t fill = ' ';
 			int16_t ljust = 0;
 			uint16_t done = 0;
@@ -113,20 +151,20 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 			case 'd':
 			case 'i':
 				if (longarg)
-					length = fmt_int(va_arg(arg, long int), 10, neg, temp);
+					length = fmt_int(va_arg(arg, long int), 10, temp);
 				else
-					length = fmt_int(va_arg(arg, int), 10, neg, temp);
+					length = fmt_int(va_arg(arg, int), 10, temp);
 				break;
 				
 			case 'x':
 				if (longarg)
-					length = fmt_int(va_arg(arg, long int), 16, neg, temp);
+					length = fmt_uint(va_arg(arg, long int), 16, temp);
 				else
-					length = fmt_int(va_arg(arg, int), 16, neg, temp);
+					length = fmt_uint(va_arg(arg, int), 16, temp);
 				break;
 
 			case 'p':
-				length = fmt_int(va_arg(arg, long int), 16, 0, temp);
+				length = fmt_uint(va_arg(arg, long int), 16, temp);
 				width = 8;
 				fill = '0';
 				break;

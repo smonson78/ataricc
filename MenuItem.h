@@ -7,6 +7,9 @@ class MenuItem {
 public:
 	MenuItem(const char* text, menu_callback action);
 	virtual ~MenuItem();
+	const char *getText() {
+		return text;
+	}
 private:
 	const char *text;
 	menu_callback action;

@@ -58,6 +58,20 @@ class SmonsonWindow : public Window {
     }
 };
 
+void recurse_print(OBJECT *b, int start)
+{
+	OBJECT *o = &b[start];
+	printf("%d - type %d -->%d [%d .. %d] \n",
+		start, o->ob_type,
+		o->ob_next == -1 ? -1 : o->ob_next, o->ob_head, o->ob_tail);
+	if (o->ob_head != -1) {
+		int n = o->ob_head;
+		while (n != start) {
+			recurse_print(b, n);
+			n = b[n].ob_next;
+		}
+	}
+}
 
 int main(int argc, char **argv)
 {
@@ -79,28 +93,31 @@ int main(int argc, char **argv)
 	simon.open();
 	
 	MenuBar menubar;
-	Menu programMenu("Smonson");
-	Menu fileMenu("File");
+	Menu programMenu(" Smonson");
+	Menu fileMenu(" File");
 	menubar.addMenu(&programMenu);
 	menubar.addMenu(&fileMenu);
 
-	smonson::LinkedListNode<Menu> *p = menubar.contents.getHead();
-	//printf("menubar head is %p\n", p);
-	//p = new smonson::LinkedListNode<Menu>((Menu *)0);
+	programMenu.addMenuItem(" About...", (menu_callback)NULL);
+	programMenu.addMenuItem(" --------", (menu_callback)NULL);
+	programMenu.addMenuItem("", (menu_callback)NULL);
+	programMenu.addMenuItem("", (menu_callback)NULL);
+	programMenu.addMenuItem("", (menu_callback)NULL);
+	programMenu.addMenuItem("", (menu_callback)NULL);
+	programMenu.addMenuItem("", (menu_callback)NULL);
+	programMenu.addMenuItem("", (menu_callback)NULL);
 
-	//void *x = malloc(44);
-	//p = (smonson::LinkedListNode<Menu> *)malloc(32);
-	//printf("p is %p\n", p);
-	//while (p) {
-	//	Menu *item = p->getItem();
-	//	printf(" * %s\n", item->getTitle());
-	//	p = p->getNext();
-	//}
-	//show_malloc();
-	//MenuItem about("About...", (menu_callback)0);
-	//ProgramMenu.addMenuItem("Your Message");
+	fileMenu.addMenuItem(" Quit", (menu_callback)NULL);
+
+	OBJECT *o = menubar.buildObjectArray();
+	menu_bar(o, MENU_SHOW);
+
+	//recurse_print(o, 0);
+
+	//Cnecin();
     // Main loop
     app.run();
+    delete[] o;
    
     //delete simon2;
     return 0;

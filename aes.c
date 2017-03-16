@@ -556,6 +556,17 @@ int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow)
    return crys_if(30);
 }
 
-
+// FIXME: move this to aes_object.c
+void new_object(OBJECT *o, uint16_t type, void *spec, uint16_t x, uint16_t y,
+		uint16_t width, uint16_t height) {
+	o->ob_type = type;
+	o->ob_flags = 0;
+	o->ob_state = 0;
+	o->ob_spec = spec;
+	o->ob_x = x;
+	o->ob_y = y;
+	o->ob_width = width;
+	o->ob_height = height;
+}
 
 #endif

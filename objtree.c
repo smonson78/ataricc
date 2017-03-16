@@ -12,7 +12,7 @@ typedef struct
     uint16_t ob_type;   /* Object type                   */
     uint16_t ob_flags;  /* Manipulation flags            */
     uint16_t ob_state;  /* Object status                 */
-    uint32_t ob_spec;      /* More under object type        */
+    uint32_t ob_spec;   /* More under object type        */
     uint16_t ob_x;      /* X-coordinate of the object    */
     uint16_t ob_y;      /* Y-coordinate of the object    */
     uint16_t ob_width;  /* Width of the object           */
