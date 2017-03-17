@@ -240,6 +240,15 @@ void memcpy(void *dest, void *src, size_t bytes)
 	}
 }
 
+size_t strlen(const char *s)
+{
+	const char *p = s;
+	while (*p)
+		p++;
+	return (size_t)p - (size_t)s;
+}
+
+
 void exit(uint16_t retval)
 {
 	_exit(retval);
@@ -347,11 +356,6 @@ int memcmp(const void *s1, const void *s2, size_t n)
         s1++;
         s2++;
     }
-    return 0;
-}
-
-int strlen(const char *src) {
-    printf("strlen called\n");
     return 0;
 }
 

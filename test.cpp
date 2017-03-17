@@ -83,23 +83,23 @@ int main(int argc, char **argv)
 	simon.size(350, 50, 200, 150);
 	app.add_window(&simon);
 
-	//Window *simon2 = new Window();
-	//app.add_window(simon2);
-	//simon2->setstyle(WIND_NAME|WIND_MOVER);
-	//simon2->settitle("Not-smonson");
-	//simon2->size(400, 80, 200, 150);
+	Window *simon2 = new Window();
+	app.add_window(simon2);
+	simon2->setstyle(WIND_NAME|WIND_MOVER);
+	simon2->settitle("Not-smonson");
+	simon2->size(400, 80, 200, 150);
 
-	//simon2->open();
+	simon2->open();
 	simon.open();
 	
 	MenuBar menubar;
-	Menu programMenu(" Smonson");
-	Menu fileMenu(" File");
+	Menu programMenu(" Smonson ");
+	Menu fileMenu(" File ");
 	menubar.addMenu(&programMenu);
 	menubar.addMenu(&fileMenu);
 
-	programMenu.addMenuItem(" About...", (menu_callback)NULL);
-	programMenu.addMenuItem(" --------", (menu_callback)NULL);
+	programMenu.addMenuItem("  About...  ", (menu_callback)NULL);
+	programMenu.addMenuItem("------------", (menu_callback)NULL);
 	programMenu.addMenuItem("", (menu_callback)NULL);
 	programMenu.addMenuItem("", (menu_callback)NULL);
 	programMenu.addMenuItem("", (menu_callback)NULL);
@@ -107,7 +107,11 @@ int main(int argc, char **argv)
 	programMenu.addMenuItem("", (menu_callback)NULL);
 	programMenu.addMenuItem("", (menu_callback)NULL);
 
-	fileMenu.addMenuItem(" Quit", (menu_callback)NULL);
+	fileMenu.addMenuItem("  Open  ", (menu_callback)NULL);
+	fileMenu.addMenuItem("  Close  ", (menu_callback)NULL);
+	fileMenu.addMenuItem("---------", (menu_callback)NULL);
+
+	fileMenu.addMenuItem("  Quit  ", (menu_callback)NULL);
 
 	OBJECT *o = menubar.buildObjectArray();
 	menu_bar(o, MENU_SHOW);
@@ -119,6 +123,6 @@ int main(int argc, char **argv)
     app.run();
     delete[] o;
    
-    //delete simon2;
+    delete simon2;
     return 0;
 }
