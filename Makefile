@@ -10,7 +10,7 @@ LDFLAGS=-nostdlib
 INSTALL=/home/simon/dev/atari-hd
 TARGET=TEST.PRG
 LIBGCC:=$(shell $(CXX) $(CFLAGS) --print-libgcc-file-name)
-TOSLIBS=tos.o aes.o xbios.o aes_window.o
+TOSLIBS=tos.o aes.o xbios.o aes_window.o gemdos.o
 APPLIBS=app.o app_window.o MenuBar.o Menu.o MenuItem.o LinkedList.o
 ALLLIBS=crt0.o crtstuff.o libc.o $(TOSLIBS) $(APPLIBS)
 
