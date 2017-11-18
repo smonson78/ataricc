@@ -1,6 +1,6 @@
 
 extern "C" {
-#include <gem.h>
+#include <gemdos.h>
 #include <libc.h>
 }
 
