@@ -2,8 +2,9 @@ CC=m68k-elf-gcc
 CXX=m68k-elf-g++
 OBJCOPY=m68k-elf-objcopy
 
-CFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -ffreestanding
-CXXFLAGS=-Os -g -m68000 -Wall -fomit-frame-pointer -fno-builtin -I. -fno-exceptions -fno-rtti -ffreestanding
+STD_CFLAGS=-m68000 -fomit-frame-pointer -fno-builtin -I. -ffreestanding
+CFLAGS=-Os -g -Wall $(STD_CFLAGS)
+CXXFLAGS=-Os -g -Wall $(STD_CFLAGS)
 LDLIBS=-lgcc
 LDFLAGS=-nostdlib
 
@@ -12,7 +13,7 @@ TARGET=TEST.PRG
 LIBGCC:=$(shell $(CXX) $(CFLAGS) --print-libgcc-file-name)
 TOSLIBS=tos.o aes.o xbios.o aes_window.o gemdos.o
 APPLIBS=app.o app_window.o MenuBar.o Menu.o MenuItem.o LinkedList.o
-ALLLIBS=crt0.o crtstuff.o libc.o $(TOSLIBS) $(APPLIBS)
+ALLLIBS=crt0.o crtstuff.o libc.o $(TOSLIBS) $(APPLIBS) dlmalloc.o
 
 all: $(TARGET)
 
@@ -24,6 +25,12 @@ $(TARGET): test.elf
 
 $(APPLIBS): app.h app_window.h aes.h tos.h aes_window.h
 $(APPLIBS): LinkedList.h LinkedListNode.h
+
+dlmalloc.o: dlmalloc.c
+	$(CC) $(STD_CFLAGS) -O3 -DLACKS_SYS_TYPES_H -DHAVE_MORECORE=0 -DNO_MALLOC_STATS -DLACKS_ERRNO_H \
+		-DLACKS_TIME_H -DLACKS_STDLIB_H -DLACKS_SYS_MMAN_H -DLACKS_FCNTL_H -DLACKS_UNISTD_H \
+		-DLACKS_SYS_PARAM_H -DLACKS_ERRNO_H -DNO_MALLINFO -DMMAP_CLEARS=0 -DNO_MALLOC_STATS \
+		-DDEFAULT_TRIM_THRESHOLD=131072 -DNO_SEGMENT_TRAVERSAL -DHAVE_MREMAP=0 -g -c -o $@ $^
 
 clean:
 	$(RM) $(TARGET) *.o *.elf test.bin
@@ -40,7 +47,7 @@ info: debug
 elf: test.elf
 test.elf: test.o $(ALLLIBS)
 	@# Run linker, generate a relocatable object file of the whole project
-	$(CC) -Tatari.ld -Wl,--relocatable $(LDFLAGS) $^ $(LDLIBS) -o test.elf
+	$(CXX) -Tatari.ld -Wl,--relocatable $(LDFLAGS) $^ $(LDLIBS) -o test.elf
 
 debug: test.o $(ALLLIBS)
 	m68k-elf-ld -Tdebug.ld $^ -o info.elf

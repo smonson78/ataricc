@@ -29,23 +29,24 @@ class Application {
     int16_t screen_phandle;
     int16_t screen_vhandle;
 	bool quit_flag;
+  uint8_t char_height;
 	Window *windows[MAX_WINDOWS];
     OBJECT tree[17];
 
     public:
     Application();
     ~Application();
-    
+
     void add_window(Window *w);
     void quit();
     void run();
-    
+
     void get_screen_size(RectXYWH *rect);
-        
+    uint16_t get_char_height();
+
     private:
     int16_t open_vwork(int16_t phys_handle);
     Window *find_window_by_handle(int16_t h);
 };
 
 #endif
-

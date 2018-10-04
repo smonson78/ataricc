@@ -1,7 +1,7 @@
 #include <aes.h>
 #include <tos.h>
 #include <libc.h>
-
+#include <string.h>
 
 static AESPB c;
 static VDIPB v;
@@ -158,8 +158,8 @@ void set_screen_attr()
 {
 	int16_t work_out[57];
 
-	vq_extnd(screen_vhandle, 0, work_out); 
-	x_max = work_out[0]; 
+	vq_extnd(screen_vhandle, 0, work_out);
+	x_max = work_out[0];
 	y_max = work_out[1];
 	screen_rez = Getrez(); /* 0 =  low,  1 = med,  2 = high */
 	colour_screen = screen_rez < 2; /* mono 2,  colour 0 or 1 */
@@ -207,7 +207,7 @@ int16_t appl_init()
 	c.cb_pintout = int_out;
 	c.cb_padrin = addr_in;
 	c.cb_padrout = addr_out;
-	
+
 	// Set up VDIPB
 	v.contrl = vdi_control;
 	v.intin = vdi_intin;
@@ -258,7 +258,7 @@ void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out)
 	vdi_control[6] = *handle;
 
 	vdi();
-	
+
 	*handle = vdi_control[6];
 	memcpy(work_out, vdi_intout, 45);
 	memcpy(work_out + 45, vdi_ptsout, 12);
@@ -288,7 +288,7 @@ int16_t graf_mouse(int16_t gr_monumber, MFORM *gr_mofaddr)
 {
   int_in[0] = gr_monumber;
   addr_in[0] = gr_mofaddr;
-  
+
   return crys_if(78);
 }
 
@@ -296,12 +296,12 @@ int16_t graf_handle(int16_t *gr_hwchar, int16_t *gr_hhchar,
 	int16_t *gr_hwbox, int16_t *gr_hhbox)
 {
    crys_if(77);
-   
+
    *gr_hwchar = int_out[1];
    *gr_hhchar = int_out[2];
    *gr_hwbox = int_out[3];
    *gr_hhbox = int_out[4];
-   
+
    return int_out[0];
 }
 
@@ -556,6 +556,7 @@ int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow)
    return crys_if(30);
 }
 
+// A convenience function to fill in an OBJECT structure in one line.
 // FIXME: move this to aes_object.c
 void new_object(OBJECT *o, uint16_t type, void *spec, uint16_t x, uint16_t y,
 		uint16_t width, uint16_t height) {

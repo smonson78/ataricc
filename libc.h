@@ -6,7 +6,6 @@
 #define MALLOC_MIN_ALLOCATION 32
 
 typedef uint16_t FILE;
-typedef unsigned long int size_t;
 #define NULL ((void *)0)
 
 extern FILE *stdout;
@@ -24,14 +23,24 @@ extern size_t malloc_total_size;
 
 int printf(const char *format, ...);
 int puts(const char *s);
-void memcpy(void *dest, void *src, size_t bytes);
-void memset(void *dest, int c, size_t bytes);
-int memcmp(const void *s1, const void *s2, size_t n);
 size_t strlen(const char *s);
 void exit(uint16_t retval);
 int16_t isdigit(char c);
 
 void malloc_init(size_t memsize);
+
+void abort();
+
+/* For dlmalloc */
+#define O_RDWR 0
+#define ENOMEM 0
+#define EINVAL 0
+#define PROT_READ 0
+#define PROT_WRITE 0
+#define MAP_ANONYMOUS 0
+#define MAP_PRIVATE 0
+
+/* Provided by dlmalloc */
 void *malloc(size_t size);
 void free(void *m);
 

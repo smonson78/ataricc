@@ -8,9 +8,9 @@ Application::Application() {
     // Clear window list
     for (int16_t i = 0; i < MAX_WINDOWS; i++)
         windows[i] = (Window *)NULL;
-        
+
     quit_flag = false;
-    
+
     app_id = appl_init();
     if (app_id == -1) {
 	    Cconws("*** Initialization error.\n");
@@ -18,7 +18,7 @@ Application::Application() {
 	    Cconin();
 	    exit(1);
     }
-    
+
     // Change mouse from busy-bee into pointer
     graf_mouse(0, (MFORM*)NULL);
 
@@ -37,7 +37,7 @@ Application::Application() {
     tree[0].ob_width = (80 * 8) + 0;
     tree[0].ob_height = (25 * 16) + 0;
     tree[0].ob_spec = (void *)0x00000000;
-    
+
     tree[1].ob_type = 20;
     tree[1].ob_next = 5;
     tree[1].ob_head = 2;
@@ -265,18 +265,18 @@ Window *Application::find_window_by_handle(int16_t h)
 void Application::run()
 {
     int16_t msg[8];
-    
+
     while (quit_flag == false) {
-    
+
         //int16_t dummy[6];
 
         evnt_mesag(msg);
         //evnt_multi(0x10, 0, 0, 0, 0, 0, 0, 0, 0,
         //    0, 0, 0, 0, 0,
-        //    msg, 
-        //    0, 0, 
+        //    msg,
+        //    0, 0,
         //    &dummy[0], &dummy[1], &dummy[2], &dummy[3], &dummy[4], &dummy[5]);
-            
+
         WM_Event e = (WM_Event)msg[0];
         Window *w;
 
@@ -333,6 +333,11 @@ int16_t Application::open_vwork(int16_t phys_handle)
     work_in[10] = 2;
     new_handle = phys_handle;
     v_opnvwk(work_in, &new_handle, work_out);
+    if (work_out[1] == 480) {
+      char_height = 16;
+    } else {
+      char_height = 8;
+    }
     return new_handle;
 }
 
@@ -342,7 +347,7 @@ void Application::add_window(Window *w) {
     // Keep a reference to the application in the window, so that events
     // in the window can easily access application data.
     w->set_app(this);
-    
+
     // Keep track of the given window
     for (int16_t i = 0; i < MAX_WINDOWS; i++) {
         if (!windows[i]) {
@@ -366,4 +371,6 @@ void Application::get_screen_size(RectXYWH *rect)
     wind_get(0, WF_WORKXYWH, &rect->x, &rect->y, &rect->w, &rect->h);
 }
 
-
+uint16_t Application::get_char_height() {
+  return char_height;
+}

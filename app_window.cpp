@@ -5,6 +5,7 @@ extern "C" {
 #include <tos.h>
 #include <stdint.h>
 #include <libc.h>
+#include <string.h>
 }
 
 #include "app.h"
@@ -71,7 +72,7 @@ bool intersect_xywh(int16_t *dst, int16_t *src)
 }
 
 // Redraw part of the window contents
-void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h) 
+void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
 {
     // Disable updates
     graf_mouse(M_OFF, (MFORM *)NULL);
@@ -83,7 +84,7 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
     cliprect[1] = y;
     cliprect[2] = w;
     cliprect[3] = h;
-    
+
     // Get first rectangle
     int16_t r[4];
     wind_get(handle, WF_FIRSTXYWH, &r[0], &r[1], &r[2], &r[3]);
@@ -101,14 +102,14 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
             temp[2] = r[0] + r[2] - 1;
             temp[3] = r[1] + r[3] - 1;
             vs_clip(vhandle, 1, temp);
-            
+
             draw(vhandle, temp);
         }
-        
+
         // Get next rectangle
         wind_get(handle, WF_NEXTXYWH, &r[0], &r[1], &r[2], &r[3]);
     }
-    
+
     // Enable updates
     wind_update(END_UPDATE);
     graf_mouse(M_ON, (MFORM *)NULL);
@@ -132,7 +133,7 @@ void Window::event_fulled()
         maximised = true;
     } else {
         // Return to non-maximised dimensions
-        size(nm_dimensions[0], nm_dimensions[1], 
+        size(nm_dimensions[0], nm_dimensions[1],
             nm_dimensions[2], nm_dimensions[3]);
         maximised = false;
     }
@@ -155,16 +156,16 @@ void Window::open() {
 
     // Connect the window to AES
     handle = wind_create(style, 0, 0, 640, 400);
-    wind_set(handle, WF_NAME, (int32_t)title >> 16, 
+    wind_set(handle, WF_NAME, (int32_t)title >> 16,
         (int32_t)title & 0xFFFF, 0, 0);
 
     // Update the work area details
     update();
-    
+
     // Open the window
-    wind_open(handle, dimensions[0], dimensions[1], 
+    wind_open(handle, dimensions[0], dimensions[1],
         dimensions[2], dimensions[3]);
-        
+
     isopen = true;
 }
 
@@ -201,6 +202,3 @@ void Window::setstyle(int16_t s)
 {
     style = s;
 }
-
-
-

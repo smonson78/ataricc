@@ -7,7 +7,8 @@ extern "C" {
 
 #include "LinkedListNode.h"
 
-MenuBar::MenuBar() {
+MenuBar::MenuBar(uint16_t char_height) {
+	this->char_height = char_height;
 }
 
 MenuBar::~MenuBar() {
@@ -21,12 +22,14 @@ OBJECT *MenuBar::buildObjectArray() {
 
 	/* Build required base menu structure */
 	// ROOT
-	new_object(&p[0], OBJ_IBOX, (void *)0, 0, 0, 80 * 8, 25 * 16);
+	new_object2(&p[0], OBJ_IBOX, (void *)0,
+		0, 0, 0,
+		80 * 8, 25, 0);
 	p[0].ob_next = -1;
 	p[0].ob_head = 1;
 
 	// THE BAR
-	new_object(&p[1], OBJ_GBOX, (void *)0x1100, 0, 0, 80 * 8, 16 + 2);
+	new_object2(&p[1], OBJ_GBOX, (void *)0x1100, 0, 0, 0, 80 * 8, 16, 2);
 	p[1].ob_head = 2;
 	p[1].ob_tail = 2;
 
@@ -146,7 +149,19 @@ OBJECT *MenuBar::buildObjectArray() {
 	return p;
 }
 
-
 void MenuBar::addMenu(Menu *menu) {
 	contents.addItem(menu);
+}
+
+void MenuBar::new_object2(OBJECT *o, uint16_t type, void *spec, uint16_t x,
+	uint16_t y_lines, uint16_t y_pixels, uint16_t width,
+	uint16_t height_lines, uint16_t height_pixels) {
+	o->ob_type = type;
+	o->ob_flags = 0;
+	o->ob_state = 0;
+	o->ob_spec = spec;
+	o->ob_x = x;
+	o->ob_y = (y_lines * char_height) + y_pixels;
+	o->ob_width = width;
+	o->ob_height = (height_lines * char_height) * height_pixels;
 }

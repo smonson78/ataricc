@@ -17,7 +17,7 @@ void show_malloc()
             printf("%p <-- ", p->prev);
         else
             printf("    null <-- ", p->prev);
-        
+
         if (p->used)
         	printf("%p (%d) (USED)", p, p->size);
         else
@@ -27,7 +27,7 @@ void show_malloc()
             printf(" --> %p", p->next);
         else
             printf(" --> null", p->next);
- 
+
         printf("\n");
         p = p->next;
     }
@@ -41,16 +41,16 @@ class SmonsonWindow : public Window {
         vsf_color(vhandle, 1);
         v_bar(vhandle, rect);
         vsf_color(vhandle, 0);
-        v_ellipse(vhandle, 
+        v_ellipse(vhandle,
             (visible[0] + visible[2] / 2),
             (visible[1] + visible[3] / 2),
             visible[2] / 2,
             visible[3] / 2
         );
     }
-    
+
     void event_closed() {
-        int16_t response = form_alert(1, 
+        int16_t response = form_alert(1,
             "[2][Are you sure you want to quit?]"
             "[ NO | YES ]");
         if (response == 2)
@@ -76,7 +76,7 @@ void recurse_print(OBJECT *b, int start)
 int main(int argc, char **argv)
 {
 	Application app;
-	
+
 	SmonsonWindow simon;
 	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
@@ -91,8 +91,8 @@ int main(int argc, char **argv)
 
 	simon2->open();
 	simon.open();
-	
-	MenuBar menubar;
+
+	MenuBar menubar(app.get_char_height());
 	Menu programMenu(" Smonson ");
 	Menu fileMenu(" File ");
 	menubar.addMenu(&programMenu);
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
     // Main loop
     app.run();
     delete[] o;
-   
+
     delete simon2;
     return 0;
 }

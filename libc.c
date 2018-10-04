@@ -27,20 +27,20 @@ static int16_t fmt_uint(uint32_t val, int16_t base, char *buf)
 	char temp[10];
 	int16_t size = 0;
 	int16_t i;
-	
+
 	/* Handle special case of 0 */
 	if (val == 0) {
 		buf[0] = '0';
 		buf[1] = 0;
 		return 1;
 	}
-	
+
 	/* Convert number to series of digits */
 	while (val)	{
 		temp[size++] = digits[val % base];
 		val /= base;
 	}
-	
+
 	/* Reverse digits into output buffer */
 	for (i = 0; i < size; i++) {
 		buf[size - i - 1] = temp[i];
@@ -92,7 +92,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 {
 	char temp[11];
 	uint16_t i;
-	
+
 	while (*format)
 	{
 		if (*format == '%')
@@ -106,7 +106,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 			int16_t length;
 
 			format++;
-			
+
 			/* Get modifiers first */
 			while (!done)
 			{
@@ -130,24 +130,24 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				width += *format - '0';
 				format++;
 			}
-			
+
 			if (*format == 'l') {
 				longarg = 1;
 				format++;
 			}
-			
+
 			switch (*format)
 			{
 			case '%':
 				temp[0] = '%';
 				length = 1;
 				break;
-					
+
 			case 'c':
 				temp[0] = (char)va_arg(arg, int);
 				length = 1;
 				break;
-				
+
 			case 'd':
 			case 'i':
 				if (longarg)
@@ -155,7 +155,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				else
 					length = fmt_int(va_arg(arg, int), 10, temp);
 				break;
-				
+
 			case 'x':
 				if (longarg)
 					length = fmt_uint(va_arg(arg, long int), 16, temp);
@@ -168,25 +168,25 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				width = 8;
 				fill = '0';
 				break;
-				
+
 		    case 's':
 		        // FIXME: this has to skip the 'temp' stuff
 		        Cconws(va_arg(arg, const char *));
 		        length = 0;
                 break;
-                
+
 			default:
 				/* It's an error! */
 				continue;
 			}
-			
+
 			temp[length] = 0;
 			if (ljust)
 				Cconws(temp);
-				
+
 			for (i = length; i < width; i++)
 				Cconout(fill);
-			
+
 			if (!ljust)
 				Cconws(temp);
 		}
@@ -196,10 +196,10 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				Cconout('\r');
 			Cconout(*format);
 		}
-		
+
 		format++;
 	}
-	
+
 	return 0;
 }
 
@@ -233,7 +233,7 @@ int puts(const char *s)
 	return 0;
 }
 
-void memcpy(void *dest, void *src, size_t bytes)
+void memcpy(void *dest, const void *src, size_t bytes)
 {
 	while (bytes--) {
 		*((char *)dest++) = *((char *)src++);
@@ -255,9 +255,10 @@ void exit(uint16_t retval)
 }
 
 //#define MALLOC_DEBUG
-void *malloc(size_t size) {
+#if 0
+void *sys_malloc(size_t size) {
     struct memblock_t *p, *next;
-    
+
     if (size < MALLOC_MIN_ALLOCATION)
         size = MALLOC_MIN_ALLOCATION;
 
@@ -274,7 +275,7 @@ void *malloc(size_t size) {
 #endif
     	p = p->next;
     }
-    
+
     if (!p) {
 #if defined MALLOC_DEBUG
         printf("  insufficient free memory available.\n");
@@ -285,7 +286,7 @@ void *malloc(size_t size) {
 #if defined MALLOC_DEBUG
     printf("  Found unused block of size %d\n", p->size);
 #endif
-    
+
     if (p->size > size + sizeof(struct memblock_t) + MALLOC_MIN_ALLOCATION) {
         //printf("  Block is big enough to split (excess: %d bytes)\n",
         //    p->size - sizeof(struct memblock_t) - size);
@@ -300,22 +301,22 @@ void *malloc(size_t size) {
         //printf("  p = %p\n", p);
         //printf("  next = %p\n", next);
     }
-    
+
     p->used = 1;
     return (void *)p + sizeof(struct memblock_t);
 }
 
-void free (void *m) {
+void sys_free(void *m) {
     //printf("free called (%p)\n", m);
     struct memblock_t *p = m - sizeof(struct memblock_t);
     struct memblock_t *other;
-    
+
     //printf("  freeing block at %p\n", p);
     if (p->used != 1) {
         printf("  error: free() called on unknown block %p (%d)\n", p, p->used);
         return;
     }
-    
+
     if (p->prev && p->prev->used == 0) {
         //printf("  prev block is free, can combine\n");
         other = p->prev;
@@ -325,7 +326,7 @@ void free (void *m) {
             p->next->prev = other;
         p = other;
     }
-    
+
     if (p->next && p->next->used == 0) {
         //printf("  next block is free, can combine\n");
         other = p->next;
@@ -334,9 +335,10 @@ void free (void *m) {
         if (p->next)
             p->next->prev = p;
     }
-    
+
     p->used = 0;
 }
+#endif
 
 void abort() {
     printf("abort called\n");
@@ -358,4 +360,3 @@ int memcmp(const void *s1, const void *s2, size_t n)
     }
     return 0;
 }
-
