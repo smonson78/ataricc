@@ -4,11 +4,11 @@ OBJCOPY=m68k-elf-objcopy
 
 STD_CFLAGS=-m68000 -fomit-frame-pointer -fno-builtin -I. -ffreestanding
 CFLAGS=-Os -g -Wall $(STD_CFLAGS)
-CXXFLAGS=-Os -g -Wall $(STD_CFLAGS)
+CXXFLAGS=-Os -g -Wall -fno-exceptions -fno-rtti $(STD_CFLAGS)
 LDLIBS=-lgcc
 LDFLAGS=-nostdlib
 
-INSTALL=/home/simon/dev/atari-hd
+INSTALL=/home/simon/atari-hd
 TARGET=TEST.PRG
 LIBGCC:=$(shell $(CXX) $(CFLAGS) --print-libgcc-file-name)
 TOSLIBS=tos.o aes.o xbios.o aes_window.o gemdos.o
