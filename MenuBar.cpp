@@ -15,21 +15,24 @@ MenuBar::~MenuBar() {
 }
 
 /* This function is massive. It would be good to make it a compile-time option. */
+// NOTE see Atari Compendium for more info
 OBJECT *MenuBar::buildObjectArray() {
-	OBJECT *p = new OBJECT[30];
+	OBJECT *p = new OBJECT[30]; // FIXME: fixed size array
 
 	int menu_x[contents.findLength()];
 
+	int chars_wide = 40;
+
 	/* Build required base menu structure */
-	// ROOT
+	// ROOT - should be width and height of the screen
 	new_object2(&p[0], OBJ_IBOX, (void *)0,
-		0, 0, 0,
-		80 * 8, 25, 0);
+		0, 0, 0, chars_wide * 8, 0, 200); // FIXME: hard-coded height
 	p[0].ob_next = -1;
 	p[0].ob_head = 1;
 
 	// THE BAR
-	new_object2(&p[1], OBJ_GBOX, (void *)0x1100, 0, 0, 0, 80 * 8, 16, 2);
+	new_object2(&p[1], OBJ_GBOX, (void *)0x1100,
+		0, 0, 0, chars_wide * 8, 1, 2); // height of font plus 2 pixels
 	p[1].ob_head = 2;
 	p[1].ob_tail = 2;
 
@@ -47,7 +50,7 @@ OBJECT *MenuBar::buildObjectArray() {
 		menu_x[i] = menu_start_x;
 		o = 3 + i;
 		new_object(&p[o], OBJ_GTITLE, (void *)item->getTitle(),
-				menu_start_x, 0, width, 16 + 3);
+				menu_start_x, 0, width, char_height + 3);
 		menu_start_x += width;
 		p[o].ob_next = o + 1;
 		p[o].ob_head = -1;
@@ -56,8 +59,14 @@ OBJECT *MenuBar::buildObjectArray() {
 		i++;
 	}
 
-	// fill in THE ACTIVE
-	new_object(&p[2], OBJ_IBOX, (void *)0, 2 * 8, 0, total_menu_width, 16 + 3);
+	// fill in THE ACTIVE - height of font, width of screen
+/*	new_object(&p[2], OBJ_IBOX, (void *)0,
+		2 * 8, 0, // x, y
+		320, char_height);  // width, height
+*/
+	new_object2(&p[2], OBJ_IBOX, (void *)0,
+		2 * 8, 0, 0, // x, y
+		320, 1, 0);  // width, height
 	p[2].ob_next = 1;
 	p[2].ob_head = 3;
 	p[2].ob_tail = o; // update pointer from ACTIVE to the last menu title
@@ -71,7 +80,8 @@ OBJECT *MenuBar::buildObjectArray() {
 	int screen_width = 0;
 	int screen_height = 0;
 
-	new_object(&p[i_screen], OBJ_IBOX, (void *)0, 0, 16 + 3, 80 * 8, 8 * 16);
+	new_object(&p[i_screen], OBJ_IBOX, (void *)0, 0,
+		char_height + 3, chars_wide * 8, 8 * char_height);
 	p[i_screen].ob_next = 0;
 	int i_menu = o + 1;
 	p[i_screen].ob_head = i_menu; // FIXME: if menus are present. pointer to menus
@@ -105,7 +115,7 @@ OBJECT *MenuBar::buildObjectArray() {
 			int width = strlen(subItem->getText()) * 8;
 			o++;
 			new_object(&p[o], OBJ_GSTRING, (void *)subItem->getText(),
-					0, j * 16, width, 1 * 16);
+					0, j * char_height, width, 1 * char_height);
 			p[o].ob_next = o + 1;
 			p[o].ob_head = -1;
 			p[o].ob_tail = -1;
@@ -125,7 +135,7 @@ OBJECT *MenuBar::buildObjectArray() {
 		}
 
 		p[i_menu].ob_width = max_width; // width, height of drop-down box
-		p[i_menu].ob_height = j * 16;
+		p[i_menu].ob_height = j * char_height;
 		p[i_menu].ob_next = o + 1; // pointer to next menu
 		p[i_menu].ob_tail = o; // tail of menu's list
 		p[o].ob_next = i_menu; // last pointer back to menu
@@ -163,5 +173,5 @@ void MenuBar::new_object2(OBJECT *o, uint16_t type, void *spec, uint16_t x,
 	o->ob_x = x;
 	o->ob_y = (y_lines * char_height) + y_pixels;
 	o->ob_width = width;
-	o->ob_height = (height_lines * char_height) * height_pixels;
+	o->ob_height = (height_lines * char_height) + height_pixels;
 }

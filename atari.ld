@@ -27,13 +27,13 @@ SECTIONS {
 		. = ALIGN(2);
 		PROVIDE(_end = .);
 	}
+	/* Allow a 16KB stack */
 	. = . + 0x4000;
 	stack = ALIGN(2);
-	
+
 	/DISCARD/ : {
 		*(.group)
 		*(.comment)
 		*(.debug*)
 	}
 }
-

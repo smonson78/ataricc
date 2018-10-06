@@ -52,14 +52,14 @@ int main(int argc, char **argv)
 	SmonsonWindow simon;
 	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
-	simon.size(350, 50, 200, 150);
+	simon.size(20, 20, 150, 60);
 	app.add_window(&simon);
 
 	Window *simon2 = new Window();
 	app.add_window(simon2);
 	simon2->setstyle(WIND_NAME|WIND_MOVER);
 	simon2->settitle("Not-smonson");
-	simon2->size(400, 80, 200, 150);
+	simon2->size(100, 70, 150, 60);
 
 	simon2->open();
 	simon.open();
@@ -96,6 +96,6 @@ int main(int argc, char **argv)
     delete[] o;
 
     delete simon2;
-  
+
     return 0;
 }

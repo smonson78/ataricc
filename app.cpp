@@ -312,7 +312,7 @@ void Application::run()
             //((char *)buf)[18] = '0' + msg[3];
             //((char *)buf)[20] = '0' + msg[4];
             //form_alert(1, buf);
-            if (msg[4] == 16)
+            if (msg[4] == 16) // object index of menu item selected
                 quit();
             break;
         }
@@ -333,11 +333,12 @@ int16_t Application::open_vwork(int16_t phys_handle)
     work_in[10] = 2;
     new_handle = phys_handle;
     v_opnvwk(work_in, &new_handle, work_out);
-    if (work_out[1] == 480) {
+    if (work_out[1] == 399) {
       char_height = 16;
     } else {
       char_height = 8;
     }
+
     return new_handle;
 }
 
