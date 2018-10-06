@@ -7,34 +7,6 @@ extern "C" {
 #include "app.h"
 #include "LinkedListNode.h"
 
-
-void show_malloc()
-{
-    struct memblock_t *p = malloc_head;
-    printf("\n");
-    while (p) {
-        if (p->prev)
-            printf("%p <-- ", p->prev);
-        else
-            printf("    null <-- ", p->prev);
-
-        if (p->used)
-        	printf("%p (%d) (USED)", p, p->size);
-        else
-        	printf("%p (%d)", p, p->size);
-
-        if (p->next)
-            printf(" --> %p", p->next);
-        else
-            printf(" --> null", p->next);
-
-        printf("\n");
-        p = p->next;
-    }
-    printf("\n");
-}
-
-
 class SmonsonWindow : public Window {
 
     void draw(int16_t vhandle, int16_t rect[]) {
@@ -124,5 +96,6 @@ int main(int argc, char **argv)
     delete[] o;
 
     delete simon2;
+  
     return 0;
 }

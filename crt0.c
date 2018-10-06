@@ -12,7 +12,6 @@ int __libc_start_main()
     char *args[1];
     args[0] = "";
     __do_global_ctors_aux();
-    malloc_init(256 * 1024); // Alloc 256k for now.
     int result = main(1, args);
     __do_global_dtors_aux();
 
@@ -21,7 +20,7 @@ int __libc_start_main()
 
 __attribute__ ((noreturn))
 __attribute__ ((section(".entry")))
-void _start() 
+void _start()
 {
     __asm__ __volatile__
     (

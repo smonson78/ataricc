@@ -6,7 +6,7 @@ STD_CFLAGS=-m68000 -fomit-frame-pointer -fno-builtin -I. -ffreestanding
 CFLAGS=-Os -g -Wall $(STD_CFLAGS)
 CXXFLAGS=-Os -g -Wall -fno-exceptions -fno-rtti $(STD_CFLAGS)
 LDLIBS=-lgcc
-LDFLAGS=-nostdlib
+LDFLAGS=-m68000 -nostdlib
 
 INSTALL=/home/simon/atari-hd
 TARGET=TEST.PRG
@@ -50,7 +50,7 @@ test.elf: test.o $(ALLLIBS)
 	$(CXX) -Tatari.ld -Wl,--relocatable $(LDFLAGS) $^ $(LDLIBS) -o test.elf
 
 debug: test.o $(ALLLIBS)
-	m68k-elf-ld -Tdebug.ld $^ -o info.elf
+	$(CXX) -Tdebug.ld -Wl,--relocatable $(LDFLAGS) $^ $(LDLIBS) -o info.elf
 
 install: $(TARGET)
 	cp --target-directory=$(INSTALL) $(TARGET)

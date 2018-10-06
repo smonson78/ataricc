@@ -4,23 +4,6 @@
 
 FILE *stdout = (FILE *)1;
 
-struct memblock_t *malloc_head;
-size_t malloc_total_size;
-
-void malloc_init(size_t memsize)
-{
-    malloc_head = (struct memblock_t *)Malloc(memsize);
-    if (malloc_head) {
-        malloc_total_size = memsize;
-        malloc_head->size = memsize - sizeof(struct memblock_t);
-        malloc_head->next = NULL;
-        malloc_head->prev = NULL;
-        malloc_head->used = 0;
-    }
-    else
-        malloc_total_size = 0;
-}
-
 static int16_t fmt_uint(uint32_t val, int16_t base, char *buf)
 {
 	static const char *digits = "0123456789abcdef";
@@ -98,7 +81,6 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 		if (*format == '%')
 		{
 			int16_t width = 0;
-			//int16_t neg = 0; // FIXME: printf is all broken
 			int16_t fill = ' ';
 			int16_t ljust = 0;
 			uint16_t done = 0;
@@ -156,6 +138,13 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 					length = fmt_int(va_arg(arg, int), 10, temp);
 				break;
 
+      case 'u':
+				if (longarg)
+					length = fmt_uint(va_arg(arg, long int), 10, temp);
+				else
+					length = fmt_uint(va_arg(arg, int), 10, temp);
+				break;
+
 			case 'x':
 				if (longarg)
 					length = fmt_uint(va_arg(arg, long int), 16, temp);
@@ -169,11 +158,11 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				fill = '0';
 				break;
 
-		    case 's':
-		        // FIXME: this has to skip the 'temp' stuff
-		        Cconws(va_arg(arg, const char *));
-		        length = 0;
-                break;
+	    case 's':
+	        // FIXME: this has to skip the 'temp' stuff
+	        Cconws(va_arg(arg, const char *));
+	        length = 0;
+              break;
 
 			default:
 				/* It's an error! */
@@ -248,97 +237,10 @@ size_t strlen(const char *s)
 	return (size_t)p - (size_t)s;
 }
 
-
 void exit(uint16_t retval)
 {
 	_exit(retval);
 }
-
-//#define MALLOC_DEBUG
-#if 0
-void *sys_malloc(size_t size) {
-    struct memblock_t *p, *next;
-
-    if (size < MALLOC_MIN_ALLOCATION)
-        size = MALLOC_MIN_ALLOCATION;
-
-#if defined MALLOC_DEBUG
-    printf("malloc called\n");
-    printf("  searching for a block of size %d\n", size);
-#endif
-
-    p = malloc_head;
-    while (p && (p->size < size || p->used)) {
-
-#if defined MALLOC_DEBUG
-        printf("  skipping block of size %d\n", p->size);
-#endif
-    	p = p->next;
-    }
-
-    if (!p) {
-#if defined MALLOC_DEBUG
-        printf("  insufficient free memory available.\n");
-#endif
-    	return 0;
-    }
-
-#if defined MALLOC_DEBUG
-    printf("  Found unused block of size %d\n", p->size);
-#endif
-
-    if (p->size > size + sizeof(struct memblock_t) + MALLOC_MIN_ALLOCATION) {
-        //printf("  Block is big enough to split (excess: %d bytes)\n",
-        //    p->size - sizeof(struct memblock_t) - size);
-
-        next = (void *)p + sizeof(struct memblock_t) + size;
-        next->prev = p;
-        next->next = p->next;
-        next->size = p->size - size - sizeof(struct memblock_t);
-        next->used = 0;
-        p->next = next;
-        p->size = size;
-        //printf("  p = %p\n", p);
-        //printf("  next = %p\n", next);
-    }
-
-    p->used = 1;
-    return (void *)p + sizeof(struct memblock_t);
-}
-
-void sys_free(void *m) {
-    //printf("free called (%p)\n", m);
-    struct memblock_t *p = m - sizeof(struct memblock_t);
-    struct memblock_t *other;
-
-    //printf("  freeing block at %p\n", p);
-    if (p->used != 1) {
-        printf("  error: free() called on unknown block %p (%d)\n", p, p->used);
-        return;
-    }
-
-    if (p->prev && p->prev->used == 0) {
-        //printf("  prev block is free, can combine\n");
-        other = p->prev;
-        other->next = p->next;
-        other->size += p->size + sizeof(struct memblock_t);
-        if (p->next)
-            p->next->prev = other;
-        p = other;
-    }
-
-    if (p->next && p->next->used == 0) {
-        //printf("  next block is free, can combine\n");
-        other = p->next;
-        p->next = other->next;
-        p->size += other->size + sizeof(struct memblock_t);
-        if (p->next)
-            p->next->prev = p;
-    }
-
-    p->used = 0;
-}
-#endif
 
 void abort() {
     printf("abort called\n");
