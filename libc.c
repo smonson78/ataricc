@@ -2,7 +2,10 @@
 #include <tos.h>
 #include <stdarg.h>
 
+FILE *stdin = (FILE *)0;
 FILE *stdout = (FILE *)1;
+FILE *stdaux = (FILE *)2;
+FILE *stdprn = (FILE *)3;
 
 static int16_t fmt_uint(uint32_t val, int16_t base, char *buf)
 {

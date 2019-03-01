@@ -3,9 +3,10 @@
 
 #include <stdint.h>
 
+#include "gemdos.h"
+
 #define MALLOC_MIN_ALLOCATION 32
 
-typedef uint16_t FILE;
 #define NULL ((void *)0)
 
 extern FILE *stdout;
@@ -26,6 +27,7 @@ int puts(const char *s);
 size_t strlen(const char *s);
 void exit(uint16_t retval);
 int16_t isdigit(char c);
+int memcmp(const void *s1, const void *s2, size_t n);
 
 void malloc_init(size_t memsize);
 
