@@ -18,8 +18,9 @@ int32_t gemdos_super(void *stack);
 int16_t Fcreate(const int8_t *fname, int16_t attr);
 int32_t Fopen(const char *fname, int16_t mode);
 void Fclose(FILE handle);
-
 int32_t Fwrite(FILE handle, int32_t count, void *buf);
 int32_t Fread(FILE handle, int32_t count, void *buf);
 
+/* Time and date */
+uint32_t Tgettime();
 #endif

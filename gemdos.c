@@ -99,3 +99,18 @@ int32_t Fread(FILE handle, int32_t count, void *buf)
   );
   return val;
 }
+
+uint32_t Tgettime()
+{
+  register uint32_t val __asm__("d0");
+  __asm__ __volatile__
+  (
+    "move.w    #44,-(%%sp)\n\t"
+    "trap      #1\n\t"
+    "addq.l    #2,%%sp\n\t"
+  : "=r"(val) /* outputs */
+  : /* inputs */
+  : "d1", "d2", "a0", "a1", "a2" /* clobbered regs */
+  );
+  return val;
+}
