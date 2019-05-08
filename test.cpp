@@ -21,12 +21,17 @@ class SmonsonWindow : public Window {
         );
     }
 
-    void event_closed() {
+    public: void event_closed() {
         int16_t response = form_alert(1,
             "[2][Are you sure you want to quit?]"
             "[ NO | YES ]");
         if (response == 2)
             app->quit();
+    }
+
+    ~SmonsonWindow() {
+      printf("SmonsonWindow dtor called!\n");
+      Cnecin();
     }
 };
 
@@ -45,11 +50,41 @@ void recurse_print(OBJECT *b, int start)
 	}
 }
 
+MenuBar *menubar;
+Menu *programMenu;
+Menu *fileMenu;
+SmonsonWindow simon;
+
+void get_menubar() {
+  menubar = new MenuBar();
+  programMenu = new Menu(" Smonson ");
+  fileMenu = new Menu(" File ");
+  menubar->addMenu(programMenu);
+  menubar->addMenu(fileMenu);
+
+  programMenu->addMenuItem("  About...  ");
+  //programMenu.addMenuItem("------------");
+  //programMenu.addMenuItem("???");
+  //programMenu.addMenuItem("");
+  //programMenu.addMenuItem("");
+  //programMenu.addMenuItem("");
+  //programMenu.addMenuItem("");
+  //programMenu.addMenuItem("");
+
+  fileMenu->addMenuItem("  Open  ");
+  fileMenu->addMenuItem("  Close  ");
+  //fileMenu.addMenuItem("---------");
+  //fileMenu.addMenuItem("  Quie  ");
+  //return &menubar;
+}
+
+
+
 int main(int argc, char **argv)
 {
-	Application app;
+  Application app;
+  //SmonsonWindow simon;
 
-	SmonsonWindow simon;
 	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
 	simon.size(20, 20, 150, 60);
@@ -64,38 +99,17 @@ int main(int argc, char **argv)
 	simon2->open();
 	simon.open();
 
-	MenuBar menubar(app.get_char_height());
-	Menu programMenu(" Smonson ");
-	Menu fileMenu(" File ");
-	menubar.addMenu(&programMenu);
-	menubar.addMenu(&fileMenu);
-
-	programMenu.addMenuItem("  About...  ", (menu_callback)NULL);
-	programMenu.addMenuItem("------------", (menu_callback)NULL);
-	programMenu.addMenuItem("", (menu_callback)NULL);
-	programMenu.addMenuItem("", (menu_callback)NULL);
-	programMenu.addMenuItem("", (menu_callback)NULL);
-	programMenu.addMenuItem("", (menu_callback)NULL);
-	programMenu.addMenuItem("", (menu_callback)NULL);
-	programMenu.addMenuItem("", (menu_callback)NULL);
-
-	fileMenu.addMenuItem("  Open  ", (menu_callback)NULL);
-	fileMenu.addMenuItem("  Close  ", (menu_callback)NULL);
-	fileMenu.addMenuItem("---------", (menu_callback)NULL);
-
-	fileMenu.addMenuItem("  Quit  ", (menu_callback)NULL);
-
-	OBJECT *o = menubar.buildObjectArray();
+  //MenuBar *menubar = get_menubar();
+  get_menubar();
+	OBJECT *o = menubar->buildObjectArray(&app);
 	menu_bar(o, MENU_SHOW);
 
 	//recurse_print(o, 0);
 
-	//Cnecin();
-    // Main loop
-    app.run();
-    delete[] o;
+  // Main loop
+  app.run();
+  delete[] o;
+  delete simon2;
 
-    delete simon2;
-
-    return 0;
+  return 0;
 }

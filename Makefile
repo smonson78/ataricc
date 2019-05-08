@@ -19,9 +19,9 @@ all: $(TARGET)
 
 $(TARGET): test.elf
 	@# Strip out .discard section and make .text writable before passing to vlink
-	#$(OBJCOPY) --remove-section=.discard --writable-text test.elf ready.o
+	@#$(OBJCOPY) --remove-section=.discard --writable-text test.elf ready.o
 	/home/simon/dev/vlink/vlink test.elf -b ataritos -o $(TARGET)
-	@$(RM) ready.o
+	@#$(RM) ready.o
 
 $(APPLIBS): app.h app_window.h aes.h tos.h aes_window.h
 $(APPLIBS): LinkedList.h LinkedListNode.h

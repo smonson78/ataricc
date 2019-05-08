@@ -16,37 +16,38 @@ extern "C" {
 #define MAX_WINDOWS 16
 
 typedef struct {
-    int16_t x, y, w, h;
+  int16_t x, y, w, h;
 } RectXYWH;
 
 class Application {
 
-    public:
+  public:
 	int16_t app_id;
 
-    private:
+  private:
 	int16_t gr_wchar, gr_hchar, gr_wbox, gr_hbox;
-    int16_t screen_phandle;
-    int16_t screen_vhandle;
+  int16_t screen_phandle;
+  int16_t screen_vhandle;
+  int16_t screen_width, screen_height, screen_mode;
 	bool quit_flag;
-  uint8_t char_height;
 	Window *windows[MAX_WINDOWS];
-    OBJECT tree[17];
+  OBJECT tree[17];
 
-    public:
-    Application();
-    ~Application();
+  public:
+  Application();
+  ~Application();
 
-    void add_window(Window *w);
-    void quit();
-    void run();
+  void add_window(Window *w);
+  void quit();
+  void run();
 
-    void get_screen_size(RectXYWH *rect);
-    uint16_t get_char_height();
+  void get_screen_size(RectXYWH *rect);
+  uint16_t get_char_height();
+  uint16_t get_screen_width();
 
-    private:
-    int16_t open_vwork(int16_t phys_handle);
-    Window *find_window_by_handle(int16_t h);
+  private:
+  int16_t open_vwork(int16_t phys_handle);
+  Window *find_window_by_handle(int16_t h);
 };
 
 #endif

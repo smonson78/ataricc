@@ -5,10 +5,10 @@ extern "C" {
 #include "libc.h"
 }
 
+#include "app.h"
 #include "LinkedListNode.h"
 
-MenuBar::MenuBar(uint16_t char_height) {
-	this->char_height = char_height;
+MenuBar::MenuBar() {
 }
 
 MenuBar::~MenuBar() {
@@ -16,23 +16,28 @@ MenuBar::~MenuBar() {
 
 /* This function is massive. It would be good to make it a compile-time option. */
 // NOTE see Atari Compendium for more info
-OBJECT *MenuBar::buildObjectArray() {
+OBJECT *MenuBar::buildObjectArray(Application *app) {
 	OBJECT *p = new OBJECT[30]; // FIXME: fixed size array
+
+
 
 	int menu_x[contents.findLength()];
 
-	int chars_wide = 40;
+	uint16_t width = app->get_screen_width();
+	uint16_t char_height = app->get_char_height();
 
 	/* Build required base menu structure */
 	// ROOT - should be width and height of the screen
-	new_object2(&p[0], OBJ_IBOX, (void *)0,
-		0, 0, 0, chars_wide * 8, 0, 200); // FIXME: hard-coded height
+	new_object2(app, &p[0], OBJ_IBOX, (void *)0,
+		0, 0, 0,
+		width, 0, 200); // FIXME: hard-coded height
 	p[0].ob_next = -1;
 	p[0].ob_head = 1;
 
 	// THE BAR
-	new_object2(&p[1], OBJ_GBOX, (void *)0x1100,
-		0, 0, 0, chars_wide * 8, 1, 2); // height of font plus 2 pixels
+	new_object2(app, &p[1], OBJ_GBOX, (void *)0x1100,
+		0, 0, 0,
+		width, 1, 2); // height of font plus 2 pixels
 	p[1].ob_head = 2;
 	p[1].ob_tail = 2;
 
@@ -59,14 +64,10 @@ OBJECT *MenuBar::buildObjectArray() {
 		i++;
 	}
 
-	// fill in THE ACTIVE - height of font, width of screen
-/*	new_object(&p[2], OBJ_IBOX, (void *)0,
-		2 * 8, 0, // x, y
-		320, char_height);  // width, height
-*/
-	new_object2(&p[2], OBJ_IBOX, (void *)0,
+	// fill in THE ACTIVE - height of font, width of menu titles
+	new_object2(app, &p[2], OBJ_IBOX, (void *)0,
 		2 * 8, 0, 0, // x, y
-		320, 1, 0);  // width, height
+		total_menu_width, 1, 0);  // width, height
 	p[2].ob_next = 1;
 	p[2].ob_head = 3;
 	p[2].ob_tail = o; // update pointer from ACTIVE to the last menu title
@@ -81,7 +82,7 @@ OBJECT *MenuBar::buildObjectArray() {
 	int screen_height = 0;
 
 	new_object(&p[i_screen], OBJ_IBOX, (void *)0, 0,
-		char_height + 3, chars_wide * 8, 8 * char_height);
+		char_height + 3, width, 8 * char_height);
 	p[i_screen].ob_next = 0;
 	int i_menu = o + 1;
 	p[i_screen].ob_head = i_menu; // FIXME: if menus are present. pointer to menus
@@ -163,9 +164,10 @@ void MenuBar::addMenu(Menu *menu) {
 	contents.addItem(menu);
 }
 
-void MenuBar::new_object2(OBJECT *o, uint16_t type, void *spec, uint16_t x,
+void MenuBar::new_object2(Application *app, OBJECT *o, uint16_t type, void *spec, uint16_t x,
 	uint16_t y_lines, uint16_t y_pixels, uint16_t width,
 	uint16_t height_lines, uint16_t height_pixels) {
+	uint16_t char_height = app->get_char_height();
 	o->ob_type = type;
 	o->ob_flags = 0;
 	o->ob_state = 0;

@@ -8,7 +8,6 @@ extern "C" {
 
 void *operator new(size_t n)
 {
-    //printf("operator new\n");
     return malloc(n);
 }
 
@@ -19,7 +18,6 @@ void *operator new[] (size_t n)
 
 void operator delete(void *p)
 {
-    //printf("operator delete\n");
     free(p);
 }
 
@@ -43,6 +41,7 @@ extern "C" {
 	typedef void (*func_ptr) (void);
 	extern func_ptr __CTOR_END__[];
 	extern func_ptr __DTOR_LIST__[];
+  void *__dso_handle = NULL;
 
 	__attribute__((section(".ctors"))) func_ptr ctors_start = (func_ptr)-1;
 	__attribute__((section(".dtors"))) func_ptr dtors_end = (func_ptr)0;
@@ -115,4 +114,3 @@ extern "C" {
 		}
 	}
 }
-
