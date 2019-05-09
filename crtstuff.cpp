@@ -55,20 +55,18 @@ extern "C" {
 	atexit_func_entry_t __atexit_funcs[ATEXIT_MAX_FUNCS];
 	uint8_t __atexit_func_count = 0;
 
-	void __do_global_ctors_aux() {
+	void __do_global_ctors_aux()
+  {
 		func_ptr *p;
 		for (p = __CTOR_END__ - 1; *p != (func_ptr) -1; p--) {
-			//printf("Global constructor: %p\n", p);
 			(*p)();
 		}
 	}
 
 	void __do_global_dtors_aux()
 	{
-		//printf("dtors\n");
 		func_ptr *p;
 		for (p = __DTOR_LIST__; *p; p++) {
-			//printf("Global Destructor: %p\n", p);
 			(*p)();
 		}
 	}
@@ -90,24 +88,19 @@ extern "C" {
 	}
 
 	void __cxa_finalize(void *f)
-	{
+  {
 		uint16_t i = __atexit_func_count;
-		if (!f)
-		{
-			while (i--)
-			{
-				if (__atexit_funcs[i].destructor_func)
-				{
+		if (!f) {
+			while (i--) {
+				if (__atexit_funcs[i].destructor_func) {
 					(*__atexit_funcs[i].destructor_func)(__atexit_funcs[i].obj_ptr);
 				}
 			}
 			return;
 		}
 
-		while (i--)
-		{
-			if (__atexit_funcs[i].destructor_func == f)
-			{
+		while (i--) {
+			if (__atexit_funcs[i].destructor_func == f) {
 				(*__atexit_funcs[i].destructor_func)(__atexit_funcs[i].obj_ptr);
 				__atexit_funcs[i].destructor_func = 0;
 			}

@@ -15,6 +15,10 @@ TOSLIBS=tos.o aes.o xbios.o aes_window.o gemdos.o
 APPLIBS=app.o app_window.o MenuBar.o Menu.o MenuItem.o LinkedList.o
 ALLLIBS=crt0.o crtstuff.o libc.o $(TOSLIBS) $(APPLIBS) dlmalloc.o
 
+# For later
+CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
+CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
+
 all: $(TARGET)
 
 $(TARGET): test.elf
@@ -47,7 +51,10 @@ info: debug
 elf: test.elf
 test.elf: test.o $(ALLLIBS)
 	@# Run linker, generate a relocatable object file of the whole project
-	$(CXX) -Tatari.ld -Wl,--relocatable $(LDFLAGS) $^ $(LDLIBS) -o test.elf
+	$(CXX) -Tatari.ld -Wl,--relocatable $(LDFLAGS) $^ $(LDLIBS) -o test1.elf
+	$(OBJCOPY) --set-section-flags .data=ALLOC,READONLY,DATA \
+		--set-section-flags .text*=ALLOC,CODE \
+		test1.elf test.elf
 
 debug: test.o $(ALLLIBS)
 	$(CXX) -Tdebug.ld -Wl,--relocatable $(LDFLAGS) $^ $(LDLIBS) -o info.elf
