@@ -17,7 +17,7 @@ Menu::~Menu() {
 }
 
 void Menu::addMenuItem(const char *text) {
-	contents.addItem(new MenuItem(text, (menu_callback)NULL));
+	contents.addItem(new MenuItem(text, nullptr));
 }
 
 void Menu::addMenuItem(const char *text, menu_callback callback) {

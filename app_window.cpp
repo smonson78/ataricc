@@ -75,7 +75,7 @@ bool intersect_xywh(int16_t *dst, int16_t *src)
 void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
 {
     // Disable updates
-    graf_mouse(M_OFF, (MFORM *)NULL);
+    graf_mouse(M_OFF, nullptr);
     wind_update(BEG_UPDATE);
 
     // set clipping rectangle to updated area
@@ -112,7 +112,7 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
 
     // Enable updates
     wind_update(END_UPDATE);
-    graf_mouse(M_ON, (MFORM *)NULL);
+    graf_mouse(M_ON, nullptr);
 }
 
 // Topped as in brought to top (focused)

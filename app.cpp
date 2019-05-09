@@ -4,7 +4,7 @@
 Application::Application() {
     // Clear window list
     for (int16_t i = 0; i < MAX_WINDOWS; i++)
-        windows[i] = (Window *)NULL;
+        windows[i] = nullptr;
 
     quit_flag = false;
 
@@ -17,7 +17,7 @@ Application::Application() {
     }
 
     // Change mouse from busy-bee into pointer
-    graf_mouse(0, (MFORM*)NULL);
+    graf_mouse(0, nullptr);
 
     // Current video mode
     screen_mode = Getrez();
@@ -40,7 +40,7 @@ Window *Application::find_window_by_handle(int16_t h)
         }
     }
     form_alert(1, "[1][AES error:|Requested window handle doesn't exist.][ OK ]");
-    return (Window *)NULL;
+    return nullptr;
 }
 
 // Event loop
@@ -49,16 +49,7 @@ void Application::run()
     int16_t msg[8];
 
     while (quit_flag == false) {
-
-        //int16_t dummy[6];
-
         evnt_mesag(msg);
-        //evnt_multi(0x10, 0, 0, 0, 0, 0, 0, 0, 0,
-        //    0, 0, 0, 0, 0,
-        //    msg,
-        //    0, 0,
-        //    &dummy[0], &dummy[1], &dummy[2], &dummy[3], &dummy[4], &dummy[5]);
-
         WM_Event e = (WM_Event)msg[0];
         Window *w;
 
@@ -137,6 +128,14 @@ void Application::add_window(Window *w) {
 
     form_alert(1, "[1][Out of windows!][ OK ]");
     quit();
+}
+
+void Application::add_menubar(MenuBar *mb) {
+  // Construct the object array for this menu bar
+  mb->buildObjectArray(this);
+
+  // Attach the menu bar to the screen
+  menu_bar(mb->get_object_array(), MENU_SHOW);
 }
 
 // Exit the event loop and therefore end the application

@@ -38,6 +38,7 @@ class Application {
   ~Application();
 
   void add_window(Window *w);
+  void add_menubar(MenuBar *mb);
   void quit();
   void run();
 

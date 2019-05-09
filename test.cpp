@@ -21,7 +21,8 @@ class SmonsonWindow : public Window {
         );
     }
 
-    public: void event_closed() {
+    public:
+    void event_closed() {
         int16_t response = form_alert(1,
             "[2][Are you sure you want to quit?]"
             "[ NO | YES ]");
@@ -50,10 +51,12 @@ void recurse_print(OBJECT *b, int start)
 	}
 }
 
+
+Application app;
+SmonsonWindow simon;
 MenuBar *menubar;
 Menu *programMenu;
 Menu *fileMenu;
-SmonsonWindow simon;
 
 void get_menubar() {
   menubar = new MenuBar();
@@ -78,13 +81,8 @@ void get_menubar() {
   //return &menubar;
 }
 
-
-
 int main(int argc, char **argv)
 {
-  Application app;
-  //SmonsonWindow simon;
-
 	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
 	simon.size(20, 20, 150, 60);
@@ -101,14 +99,15 @@ int main(int argc, char **argv)
 
   //MenuBar *menubar = get_menubar();
   get_menubar();
-	OBJECT *o = menubar->buildObjectArray(&app);
-	menu_bar(o, MENU_SHOW);
+	//OBJECT *o = menubar->buildObjectArray(&app);
+  app.add_menubar(menubar);
+	//menu_bar(o, MENU_SHOW);
 
 	//recurse_print(o, 0);
 
   // Main loop
   app.run();
-  delete[] o;
+  //delete[] o;
   delete simon2;
 
   return 0;
