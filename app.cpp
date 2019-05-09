@@ -6,7 +6,11 @@ Application::Application() {
     for (int16_t i = 0; i < MAX_WINDOWS; i++)
         windows[i] = nullptr;
 
+    // No menu bar
+    current_menubar = nullptr;
+
     quit_flag = false;
+
 
     app_id = appl_init();
     if (app_id == -1) {
@@ -81,12 +85,16 @@ void Application::run()
             w->size(msg[4], msg[5], msg[6], msg[7]);
             break;
         case MN_SELECTED:
-            //const char *buf = "[1][Menu selected X X!][ OK ]";
-            //((char *)buf)[18] = '0' + msg[3];
-            //((char *)buf)[20] = '0' + msg[4];
-            //form_alert(1, buf);
-            if (msg[4] == 16) // object index of menu item selected
-                quit();
+            if (current_menubar) {
+                //const char *buf = "[1][Menu selected X X!][ OK ]";
+                //((char *)buf)[18] = '0' + msg[3];
+                //((char *)buf)[20] = '0' + msg[4];
+                //form_alert(1, buf);
+                //if (msg[4] == 16) // object index of menu item selected
+                //    quit();
+                current_menubar->do_callback(msg[3], msg[4]);
+                menu_tnormal(current_menubar->get_object_array(), msg[3], 1);
+            }
             break;
         }
     }
@@ -132,10 +140,11 @@ void Application::add_window(Window *w) {
 
 void Application::add_menubar(MenuBar *mb) {
   // Construct the object array for this menu bar
-  mb->buildObjectArray(this);
+  current_menubar = mb;
+  current_menubar->buildObjectArray(this);
 
   // Attach the menu bar to the screen
-  menu_bar(mb->get_object_array(), MENU_SHOW);
+  menu_bar(current_menubar->get_object_array(), MENU_SHOW);
 }
 
 // Exit the event loop and therefore end the application

@@ -35,13 +35,13 @@ class SmonsonWindow : public Window {
       Cnecin();
     }
 };
-
+/*
 void recurse_print(OBJECT *b, int start)
 {
 	OBJECT *o = &b[start];
 	printf("%d - type %d -->%d [%d .. %d] \n",
 		start, o->ob_type,
-		o->ob_next == -1 ? -1 : o->ob_next, o->ob_head, o->ob_tail);
+		o->ob_next, o->ob_head, o->ob_tail);
 	if (o->ob_head != -1) {
 		int n = o->ob_head;
 		while (n != start) {
@@ -50,13 +50,17 @@ void recurse_print(OBJECT *b, int start)
 		}
 	}
 }
-
+*/
 
 Application app;
 SmonsonWindow simon;
 MenuBar *menubar;
 Menu *programMenu;
 Menu *fileMenu;
+
+void quit_callback() {
+  simon.event_closed();
+}
 
 void get_menubar() {
   menubar = new MenuBar();
@@ -65,24 +69,37 @@ void get_menubar() {
   menubar->addMenu(programMenu);
   menubar->addMenu(fileMenu);
 
-  programMenu->addMenuItem("  About...  ");
-  //programMenu.addMenuItem("------------");
-  //programMenu.addMenuItem("???");
-  //programMenu.addMenuItem("");
-  //programMenu.addMenuItem("");
-  //programMenu.addMenuItem("");
-  //programMenu.addMenuItem("");
-  //programMenu.addMenuItem("");
+  //programMenu->addMenuItem("  About...  ");
+  programMenu->addMenuItem("  First");
+  programMenu->addMenuItem("  Second");
+  programMenu->addMenuItem("  Third");
+  programMenu->addMenuItem("  Fourth");
+  programMenu->addMenuItem("  Fifth  ");
+  programMenu->addMenuItem("  Sixth  ");
+  programMenu->addMenuItem("  Seventh  ");
+  programMenu->addMenuItem("  Eighth");
+/*
+  smonson::LinkedListNode<MenuItem> *n;
+  printf("Program menu has %d items in it\n", programMenu->getContents()->findLength());
+  for (n = programMenu->getContents()->getHead(); n; n = n->getNext()) {
+		MenuItem *item = n->getItem();
+    printf("--> %s\n", item->getText());
+  }
+*/
 
-  fileMenu->addMenuItem("  Open  ");
-  fileMenu->addMenuItem("  Close  ");
-  //fileMenu.addMenuItem("---------");
-  //fileMenu.addMenuItem("  Quie  ");
-  //return &menubar;
+
+  fileMenu->addMenuItem("  Open");
+  fileMenu->addMenuItem("  Close");
+  fileMenu->addMenuItem("---------");
+  fileMenu->addMenuItem("  Quit", quit_callback);
 }
 
 int main(int argc, char **argv)
 {
+  // Reset terminal
+  //printf("\x1b");
+  //printf("E\n\n\n--start--\n");
+
 	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
 	simon.size(20, 20, 150, 60);
@@ -103,7 +120,7 @@ int main(int argc, char **argv)
   app.add_menubar(menubar);
 	//menu_bar(o, MENU_SHOW);
 
-	//recurse_print(o, 0);
+	//recurse_print(menubar->get_object_array(), 0);
 
   // Main loop
   app.run();

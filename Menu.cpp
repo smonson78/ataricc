@@ -23,3 +23,11 @@ void Menu::addMenuItem(const char *text) {
 void Menu::addMenuItem(const char *text, menu_callback callback) {
 	contents.addItem(new MenuItem(text, callback));
 }
+
+void Menu::set_object_index(int index) {
+	title_object = index;
+}
+
+int Menu::get_object_index() {
+	return title_object;
+}

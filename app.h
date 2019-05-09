@@ -31,7 +31,8 @@ class Application {
   int16_t screen_width, screen_height, screen_mode;
 	bool quit_flag;
 	Window *windows[MAX_WINDOWS];
-  OBJECT tree[17];
+  //OBJECT tree[17];
+  MenuBar *current_menubar;
 
   public:
   Application();

@@ -556,6 +556,14 @@ int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow)
    return crys_if(30);
 }
 
+int16_t menu_tnormal(OBJECT *me_ntree, int16_t me_ntitle, int16_t me_nnormal)
+{
+   int_in[0]  = me_ntitle;
+   int_in[1]  = me_nnormal;
+   addr_in[0] = me_ntree;
+   return crys_if(33);
+}
+
 // A convenience function to fill in an OBJECT structure in one line.
 // FIXME: move this to aes_object.c
 void new_object(OBJECT *o, uint16_t type, void *spec, uint16_t x, uint16_t y,
@@ -569,5 +577,4 @@ void new_object(OBJECT *o, uint16_t type, void *spec, uint16_t x, uint16_t y,
 	o->ob_width = width;
 	o->ob_height = height;
 }
-
 #endif

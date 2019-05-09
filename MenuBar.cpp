@@ -10,18 +10,29 @@ extern "C" {
 
 MenuBar::MenuBar() {
 	object_array = nullptr;
+	callbacks_array = nullptr;
 }
 
 MenuBar::~MenuBar() {
 	if (object_array) {
 		delete[] object_array;
+		delete[] callbacks_array;
 	}
 }
 
 /* This function is massive. It would be good to make it a compile-time option. */
 // NOTE see Atari Compendium for more info
 void MenuBar::buildObjectArray(Application *app) {
-	object_array = new OBJECT[30]; // FIXME: fixed size array
+	// count: 3 + menus (title objects) + 1 + menus + total menuitems
+	uint16_t count = 4;
+	for (smonson::LinkedListNode<Menu> *n = contents.getHead(); n; n = n->getNext()) {
+		Menu *item = n->getItem();
+		count += 2;
+		count += item->getContents()->findLength();
+	}
+	object_array = new OBJECT[count];
+	callbacks_array = new menu_callback[count];
+	memset(callbacks_array, 0, sizeof(callbacks_array) * sizeof(menu_callback));
 
 	int menu_x[contents.findLength()];
 
@@ -104,7 +115,7 @@ void MenuBar::buildObjectArray(Application *app) {
 		// The box around the drop-down part of the menu
 		new_object(&object_array[i_menu], OBJ_GBOX, (void *)0xff1100,
 				menu_x[i] + (2 * 8), 0, 0, 0);
-		object_array[i_menu].ob_head = i_menu + 1;
+		object_array[i_menu].ob_head = i_menu + 1; // the first menu item in the list
 		object_array[i_menu].ob_tail = -1;
 		object_array[i_screen].ob_tail = o; // update pointer from SCREEN
 
@@ -118,17 +129,25 @@ void MenuBar::buildObjectArray(Application *app) {
 			int width = strlen(subItem->getText()) * 8;
 			o++;
 			new_object(&object_array[o], OBJ_GSTRING, (void *)subItem->getText(),
-					0, j * char_height, width, 1 * char_height);
+					0, j * char_height, width, char_height);
 			object_array[o].ob_next = o + 1;
 			object_array[o].ob_head = -1;
 			object_array[o].ob_tail = -1;
-			object_array[i_screen].ob_tail = o; // update pointer from SCREEN
+			object_array[i_screen].ob_tail = o; // update tail pointer from SCREEN to the current item
+
+			callbacks_array[o] = subItem->getAction();
 
 			if (max_width < width)
 				max_width = width;
 
 			j++;
 		}
+		// Update size and pointers for this menu group
+		object_array[i_menu].ob_width = max_width; // width, height of drop-down box
+		object_array[i_menu].ob_height = j * char_height;
+		object_array[i_menu].ob_next = o + 1; // pointer to next menu
+		object_array[i_menu].ob_tail = o; // tail of menu's list points to last item
+		object_array[o].ob_next = i_menu; // last next pointer goes back to menu
 
 		// Update widths
 		o = o_start;
@@ -136,12 +155,6 @@ void MenuBar::buildObjectArray(Application *app) {
 			o++;
 			object_array[o].ob_width = max_width;
 		}
-
-		object_array[i_menu].ob_width = max_width; // width, height of drop-down box
-		object_array[i_menu].ob_height = j * char_height;
-		object_array[i_menu].ob_next = o + 1; // pointer to next menu
-		object_array[i_menu].ob_tail = o; // tail of menu's list
-		object_array[o].ob_next = i_menu; // last pointer back to menu
 
 		// keep track of max width/height
 		screen_width = (object_array[i_menu].ob_x + object_array[i_menu].ob_width) > screen_width ?
@@ -164,6 +177,12 @@ OBJECT *MenuBar::get_object_array() {
 
 void MenuBar::addMenu(Menu *menu) {
 	contents.addItem(menu);
+}
+
+void MenuBar::do_callback(uint16_t menu, uint16_t item) {
+	if (callbacks_array[item]) {
+		callbacks_array[item]();
+	}
 }
 
 void MenuBar::new_object2(Application *app, OBJECT *o, uint16_t type, void *spec, uint16_t x,

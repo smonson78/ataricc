@@ -20,6 +20,14 @@ public:
 private:
 	const char *title;
 	smonson::LinkedList<MenuItem> contents;
+
+	// For use of OBJECT-array handling:
+private:
+	int title_object;
+public:
+	void set_object_index(int index);
+	int get_object_index();
+
 };
 
 #endif
