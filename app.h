@@ -21,18 +21,19 @@ typedef struct {
 
 class Application {
 
-  public:
+    public:
 	int16_t app_id;
 
-  private:
+    private:
 	int16_t gr_wchar, gr_hchar, gr_wbox, gr_hbox;
-  int16_t screen_phandle;
-  int16_t screen_vhandle;
-  int16_t screen_width, screen_height, screen_mode;
+    int16_t screen_phandle;
+    int16_t screen_vhandle;
+    int16_t screen_width, screen_height, screen_mode;
 	bool quit_flag;
 	Window *windows[MAX_WINDOWS];
-  //OBJECT tree[17];
-  MenuBar *current_menubar;
+
+    private:
+    MenuBar *current_menubar;
 
   public:
   Application();
@@ -46,6 +47,7 @@ class Application {
   void get_screen_size(RectXYWH *rect);
   uint16_t get_char_height();
   uint16_t get_screen_width();
+  uint16_t get_screen_vhandle();
 
   private:
   int16_t open_vwork(int16_t phys_handle);

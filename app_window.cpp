@@ -39,6 +39,7 @@ void Window::size(int16_t x, int16_t y, int16_t w, int16_t h) {
     if (isopen) {
         wind_set(handle, WF_CURRXYWH, x, y, w, h);
     }
+    event_resized();
 }
 
 static inline int16_t min(int16_t a, int16_t b)
@@ -180,12 +181,16 @@ void Window::close() {
 void Window::event_closed() {
 }
 
+void Window::event_resized() {
+}
+
 // Draw client area
 void Window::draw(int16_t vhandle, int16_t rect[])
 {
     // Set draw mode=REPLACE, fill style=solid
     vswr_mode(vhandle, 1);
 	vsf_interior(vhandle, 1);
+    vs_clip(vhandle, 1, rect);
 
     // Paint white
     vsf_color(vhandle, 0);

@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#define ATEXIT_MAX_FUNCS 16
+#define ATEXIT_MAX_FUNCS 32
 
 extern "C" {
 #include "libc.h"
@@ -63,8 +63,10 @@ extern "C" {
 		}
 	}
 
+	void __cxa_finalize(void *f);
 	void __do_global_dtors_aux()
 	{
+    __cxa_finalize(0);
 		func_ptr *p;
 		for (p = __DTOR_LIST__; *p; p++) {
 			(*p)();
@@ -89,6 +91,7 @@ extern "C" {
 
 	void __cxa_finalize(void *f)
   {
+
 		uint16_t i = __atexit_func_count;
 		if (!f) {
 			while (i--) {

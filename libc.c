@@ -74,7 +74,13 @@ static int16_t fmt_int(int32_t val, int16_t base, char *buf)
 	return size + neg;
 }
 
-int vfprintf(FILE *stream, const char *format, va_list arg)
+void emit_multi(void (*emit)(char **, char), char **emit_data, const char *s) {
+	while (*s) {
+		emit(emit_data, *(s++));
+	}
+}
+
+int vfprintf(void (*emit)(char **, char), char **emit_data, const char *format, va_list arg)
 {
 	char temp[11];
 	uint16_t i;
@@ -163,7 +169,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 
 	    case 's':
 	        // FIXME: this has to skip the 'temp' stuff
-	        Cconws(va_arg(arg, const char *));
+	        emit_multi(emit, emit_data, va_arg(arg, const char *));
 	        length = 0;
               break;
 
@@ -172,21 +178,23 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				continue;
 			}
 
-			temp[length] = 0;
-			if (ljust)
-				Cconws(temp);
+			if (length != 0) {
+				temp[length] = 0;
+				if (ljust)
+					emit_multi(emit, emit_data, temp);
 
-			for (i = length; i < width; i++)
-				Cconout(fill);
+				for (i = length; i < width; i++)
+					emit(emit_data, fill);
 
-			if (!ljust)
-				Cconws(temp);
+				if (!ljust)
+					emit_multi(emit, emit_data, temp);
+			}
 		}
 		else
 		{
 			if (*format == '\n')
-				Cconout('\r');
-			Cconout(*format);
+				emit(emit_data, '\r');
+			emit(emit_data, *format);
 		}
 
 		format++;
@@ -202,13 +210,36 @@ int16_t isdigit(char c)
 	return 0;
 }
 
+void emit_console(char **x, char c) {
+	Cconout(c);
+}
+
+void emit_string(char **x, char c) {
+	**x = c;
+	(*x)++;
+}
+
 int printf(const char *format, ...)
 {
    va_list arg;
    int done;
 
    va_start(arg, format);
-   done = vfprintf(stdout, format, arg);
+   done = vfprintf(emit_console, NULL, format, arg);
+   va_end(arg);
+
+   return done;
+}
+
+int sprintf(char *dest, const char *format, ...)
+{
+   va_list arg;
+   int done;
+
+   va_start(arg, format);
+	 char *dest_copy = dest;
+   done = vfprintf(emit_string, &dest_copy, format, arg);
+	 *dest_copy = '\0';
    va_end(arg);
 
    return done;

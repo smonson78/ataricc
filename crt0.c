@@ -6,11 +6,11 @@ extern void *stack;
 int main(int argc, char **argv);
 void __do_global_ctors_aux();
 void __do_global_dtors_aux();
+void __cxa_finalize(void *f);
 
 int __libc_start_main()
 {
-    char *args[1];
-    args[0] = "";
+    char *args[] = { "" };
     __do_global_ctors_aux();
     int result = main(1, args);
     __do_global_dtors_aux();

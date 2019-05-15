@@ -119,4 +119,7 @@ int16_t rsrc_load (const char *re_lpfname);
 int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow);
 int16_t menu_tnormal(OBJECT *me_ntree, int16_t me_ntitle, int16_t me_nnormal);
 
+// file
+int16_t fsel_input(int8_t *fs_iinpath, int8_t *fs_iinsel, int16_t *fs_iexbutton);
+
 #endif

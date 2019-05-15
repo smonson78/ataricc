@@ -578,3 +578,13 @@ void new_object(OBJECT *o, uint16_t type, void *spec, uint16_t x, uint16_t y,
 	o->ob_height = height;
 }
 #endif
+
+int16_t fsel_input(int8_t *fs_iinpath, int8_t *fs_iinsel, int16_t *fs_iexbutton) {
+	addr_in[0] = fs_iinpath;
+	addr_in[1] = fs_iinsel;
+
+	crys_if(90);
+
+	*fs_iexbutton = int_out[1];
+	return int_out[0];
+}

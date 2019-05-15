@@ -11,7 +11,6 @@ Application::Application() {
 
     quit_flag = false;
 
-
     app_id = appl_init();
     if (app_id == -1) {
 	    Cconws("*** Initialization error.\n");
@@ -162,6 +161,10 @@ uint16_t Application::get_char_height() {
   if (screen_mode == 2)
     return 16;
   return 8;
+}
+
+uint16_t Application::get_screen_vhandle() {
+    return screen_vhandle;
 }
 
 uint16_t Application::get_screen_width() {

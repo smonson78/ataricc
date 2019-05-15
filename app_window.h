@@ -17,7 +17,7 @@ class Window {
     protected:
     Application *app;
     int16_t visible[4]; // cached work area
-    
+
     private:
     bool maximised;
     int16_t dimensions[4]; // current dimensions
@@ -25,7 +25,7 @@ class Window {
     int16_t style;
     int16_t isopen;
     const char *title;
-        
+
     public:
     Window();
     virtual ~Window();
@@ -39,14 +39,16 @@ class Window {
 
     void open();
     void close();
-    
-    virtual void event_closed();
+
+    // Redraw application client area after being obscured
     virtual void draw(int16_t vhandle, int16_t rect[]);
+
+    virtual void event_closed();
     virtual void event_topped();
     virtual void event_fulled();
-    
-    
-    
+    virtual void event_resized();
+
+
 };
 
 #endif

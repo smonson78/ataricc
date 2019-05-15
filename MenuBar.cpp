@@ -20,10 +20,10 @@ MenuBar::~MenuBar() {
 	}
 }
 
-/* This function is massive. It would be good to make it a compile-time option. */
+/* This function is big. It would be good to make it a compile-time option. */
 // NOTE see Atari Compendium for more info
 void MenuBar::buildObjectArray(Application *app) {
-	// count: 3 + menus (title objects) + 1 + menus + total menuitems
+	// Figure out how big the OBJECT array needs to be
 	uint16_t count = 4;
 	for (smonson::LinkedListNode<Menu> *n = contents.getHead(); n; n = n->getNext()) {
 		Menu *item = n->getItem();
@@ -31,8 +31,12 @@ void MenuBar::buildObjectArray(Application *app) {
 		count += item->getContents()->findLength();
 	}
 	object_array = new OBJECT[count];
+
+	// Create and clear an array for looking up MenuItem callbacks
 	callbacks_array = new menu_callback[count];
-	memset(callbacks_array, 0, sizeof(callbacks_array) * sizeof(menu_callback));
+	for (int i = 0; i < count; i++) {
+		callbacks_array[i] = nullptr;
+	}
 
 	int menu_x[contents.findLength()];
 
