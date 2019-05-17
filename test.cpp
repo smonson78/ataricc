@@ -10,29 +10,20 @@ extern "C" {
 class SmonsonWindow : public Window {
 
     void draw(int16_t vhandle, int16_t rect[]) {
-        // Disable updates
-        graf_mouse(M_OFF, nullptr);
-        wind_update(BEG_UPDATE);
-
         vsf_color(vhandle, 1);
         v_bar(vhandle, rect);
         vsf_color(vhandle, 0);
-        // Clip to drawable area
-        vs_clip(vhandle, 1, rect);
         v_ellipse(vhandle,
             (visible[0] + visible[2] / 2),
             (visible[1] + visible[3] / 2),
             visible[2] / 2,
             visible[3] / 2
         );
-
-        // Enable updates
-        wind_update(END_UPDATE);
-        graf_mouse(M_ON, nullptr);
     }
 
     public:
     void event_resized() {
+        redraw_window();
     }
 
     void event_closed() {
@@ -47,8 +38,6 @@ class SmonsonWindow : public Window {
       form_alert(1,
           "[1][|Smonson was filmed in front of|a live studio audience.]"
           "[ OK ]");
-    }
-    ~SmonsonWindow() {
     }
 };
 /*
@@ -101,14 +90,14 @@ void get_menubar() {
   menubar->addMenu(fileMenu);
 
   programMenu->addMenuItem("  About...  ", about_callback);
-  programMenu->addMenuItem("  First");
-  programMenu->addMenuItem("  Second");
-  programMenu->addMenuItem("  Third");
-  programMenu->addMenuItem("  Fourth");
-  programMenu->addMenuItem("  Fifth  ");
-  programMenu->addMenuItem("  Sixth  ");
-  programMenu->addMenuItem("  Seventh  ");
-  programMenu->addMenuItem("  Eighth");
+  programMenu->addMenuItem("");
+  programMenu->addMenuItem("");
+  programMenu->addMenuItem("");
+  programMenu->addMenuItem("");
+  programMenu->addMenuItem("");
+  programMenu->addMenuItem("");
+  programMenu->addMenuItem("");
+  programMenu->addMenuItem("");
 /*
   smonson::LinkedListNode<MenuItem> *n;
   printf("Program menu has %d items in it\n", programMenu->getContents()->findLength());

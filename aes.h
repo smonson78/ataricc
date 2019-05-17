@@ -66,6 +66,7 @@ int16_t crys_if(int16_t opcode);
 
 int16_t appl_init();
 int16_t appl_exit();
+int16_t appl_write(int16_t ap_wid, int16_t ap_wlength, void *ap_wpbuff);
 
 void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out);
 void vq_extnd (int16_t handle, int16_t owflag, int16_t *work_out);

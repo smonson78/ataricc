@@ -59,8 +59,7 @@ void Application::run()
         switch (e) {
         case WM_REDRAW:
             w = find_window_by_handle(msg[3]);
-            w->redraw(screen_vhandle,
-                msg[4], msg[5], msg[6], msg[7]);
+            w->redraw(screen_vhandle, msg[4], msg[5], msg[6], msg[7]);
             break;
         case WM_NEWTOP:
         case WM_TOPPED:
@@ -85,12 +84,6 @@ void Application::run()
             break;
         case MN_SELECTED:
             if (current_menubar) {
-                //const char *buf = "[1][Menu selected X X!][ OK ]";
-                //((char *)buf)[18] = '0' + msg[3];
-                //((char *)buf)[20] = '0' + msg[4];
-                //form_alert(1, buf);
-                //if (msg[4] == 16) // object index of menu item selected
-                //    quit();
                 current_menubar->do_callback(msg[3], msg[4]);
                 menu_tnormal(current_menubar->get_object_array(), msg[3], 1);
             }
@@ -161,10 +154,6 @@ uint16_t Application::get_char_height() {
   if (screen_mode == 2)
     return 16;
   return 8;
-}
-
-uint16_t Application::get_screen_vhandle() {
-    return screen_vhandle;
 }
 
 uint16_t Application::get_screen_width() {

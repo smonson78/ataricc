@@ -38,8 +38,8 @@ void Window::size(int16_t x, int16_t y, int16_t w, int16_t h) {
 
     if (isopen) {
         wind_set(handle, WF_CURRXYWH, x, y, w, h);
+        event_resized();
     }
-    event_resized();
 }
 
 static inline int16_t min(int16_t a, int16_t b)
@@ -103,7 +103,6 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
             temp[2] = r[0] + r[2] - 1;
             temp[3] = r[1] + r[3] - 1;
             vs_clip(vhandle, 1, temp);
-
             draw(vhandle, temp);
         }
 
@@ -114,6 +113,15 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
     // Enable updates
     wind_update(END_UPDATE);
     graf_mouse(M_ON, nullptr);
+}
+
+// Force a redraw by sending a WM_REDRAW message to the application
+void Window::redraw_window() {
+    int16_t msg[8] = {
+        WM_REDRAW, app->app_id, 0, handle,
+        dimensions[0], dimensions[1], dimensions[2], dimensions[3]
+    };
+    appl_write(app->app_id, 16, msg);
 }
 
 // Topped as in brought to top (focused)
@@ -134,8 +142,7 @@ void Window::event_fulled()
         maximised = true;
     } else {
         // Return to non-maximised dimensions
-        size(nm_dimensions[0], nm_dimensions[1],
-            nm_dimensions[2], nm_dimensions[3]);
+        size(nm_dimensions[0], nm_dimensions[1], nm_dimensions[2], nm_dimensions[3]);
         maximised = false;
     }
 }

@@ -310,6 +310,14 @@ int16_t appl_exit()
    return crys_if(19);
 }
 
+int16_t appl_write(int16_t ap_wid, int16_t ap_wlength, void *ap_wpbuff) {
+	int_in[0]  = ap_wid;
+	int_in[1]  = ap_wlength;
+	addr_in[0] = ap_wpbuff;
+
+	return crys_if(12);
+}
+
 int16_t form_alert(int16_t fo_adefbttn, const char *fo_astring)
 {
   int_in[0]  = fo_adefbttn;
