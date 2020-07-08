@@ -271,6 +271,13 @@ size_t strlen(const char *s)
 	return (size_t)p - (size_t)s;
 }
 
+void strcpy(char *dest, const char *src)
+{
+	while (*src) {
+		*(dest++) = *(src++);
+	}
+}
+
 void exit(uint16_t retval)
 {
 	_exit(retval);
