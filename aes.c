@@ -1,7 +1,7 @@
 #include <aes.h>
 #include <tos.h>
 #include <libc.h>
-
+#include <string.h>
 
 static AESPB c;
 static VDIPB v;
@@ -158,8 +158,8 @@ void set_screen_attr()
 {
 	int16_t work_out[57];
 
-	vq_extnd(screen_vhandle, 0, work_out); 
-	x_max = work_out[0]; 
+	vq_extnd(screen_vhandle, 0, work_out);
+	x_max = work_out[0];
 	y_max = work_out[1];
 	screen_rez = Getrez(); /* 0 =  low,  1 = med,  2 = high */
 	colour_screen = screen_rez < 2; /* mono 2,  colour 0 or 1 */
@@ -207,7 +207,7 @@ int16_t appl_init()
 	c.cb_pintout = int_out;
 	c.cb_padrin = addr_in;
 	c.cb_padrout = addr_out;
-	
+
 	// Set up VDIPB
 	v.contrl = vdi_control;
 	v.intin = vdi_intin;
@@ -258,7 +258,7 @@ void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out)
 	vdi_control[6] = *handle;
 
 	vdi();
-	
+
 	*handle = vdi_control[6];
 	memcpy(work_out, vdi_intout, 45);
 	memcpy(work_out + 45, vdi_ptsout, 12);
@@ -288,7 +288,7 @@ int16_t graf_mouse(int16_t gr_monumber, MFORM *gr_mofaddr)
 {
   int_in[0] = gr_monumber;
   addr_in[0] = gr_mofaddr;
-  
+
   return crys_if(78);
 }
 
@@ -296,18 +296,26 @@ int16_t graf_handle(int16_t *gr_hwchar, int16_t *gr_hhchar,
 	int16_t *gr_hwbox, int16_t *gr_hhbox)
 {
    crys_if(77);
-   
+
    *gr_hwchar = int_out[1];
    *gr_hhchar = int_out[2];
    *gr_hwbox = int_out[3];
    *gr_hhbox = int_out[4];
-   
+
    return int_out[0];
 }
 
 int16_t appl_exit()
 {
    return crys_if(19);
+}
+
+int16_t appl_write(int16_t ap_wid, int16_t ap_wlength, void *ap_wpbuff) {
+	int_in[0]  = ap_wid;
+	int_in[1]  = ap_wlength;
+	addr_in[0] = ap_wpbuff;
+
+	return crys_if(12);
 }
 
 int16_t form_alert(int16_t fo_adefbttn, const char *fo_astring)
@@ -390,7 +398,7 @@ void v_bar(int16_t handle, int16_t *pxyarray)
    vdi();
 }
 
-void v_ellipse (int16_t handle, int16_t x, int16_t y, int16_t xradius,
+void v_ellipse(int16_t handle, int16_t x, int16_t y, int16_t xradius,
     int16_t yradius)
 {
    vdi_ptsin[0] = x;
@@ -402,6 +410,23 @@ void v_ellipse (int16_t handle, int16_t x, int16_t y, int16_t xradius,
    vdi_control[1] = 2;
    vdi_control[3] = 0;
    vdi_control[5] = 5;
+   vdi_control[6] = handle;
+
+   vdi();
+}
+
+void v_gtext(int16_t handle, int16_t x, int16_t y, const char *string)
+{
+   vdi_ptsin[0] = x;
+   vdi_ptsin[1] = y;
+
+   int i = 0;
+   while ((vdi_intin[i++] = *string++)) {
+   }
+
+   vdi_control[0] = 8;
+   vdi_control[1] = 1;
+   vdi_control[3] = -i;
    vdi_control[6] = handle;
 
    vdi();
@@ -556,6 +581,35 @@ int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow)
    return crys_if(30);
 }
 
+int16_t menu_tnormal(OBJECT *me_ntree, int16_t me_ntitle, int16_t me_nnormal)
+{
+   int_in[0]  = me_ntitle;
+   int_in[1]  = me_nnormal;
+   addr_in[0] = me_ntree;
+   return crys_if(33);
+}
 
-
+// A convenience function to fill in an OBJECT structure in one line.
+// FIXME: move this to aes_object.c
+void new_object(OBJECT *o, uint16_t type, void *spec, uint16_t x, uint16_t y,
+		uint16_t width, uint16_t height) {
+	o->ob_type = type;
+	o->ob_flags = 0;
+	o->ob_state = 0;
+	o->ob_spec = spec;
+	o->ob_x = x;
+	o->ob_y = y;
+	o->ob_width = width;
+	o->ob_height = height;
+}
 #endif
+
+int16_t fsel_input(char *fs_iinpath, char *fs_iinsel, int16_t *fs_iexbutton) {
+	addr_in[0] = fs_iinpath;
+	addr_in[1] = fs_iinsel;
+
+	crys_if(90);
+
+	*fs_iexbutton = int_out[1];
+	return int_out[0];
+}

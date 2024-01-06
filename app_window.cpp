@@ -1,10 +1,12 @@
 
+#include <cstdint>
+
 extern "C" {
 #include <aes.h>
 #include <aes_window.h>
 #include <tos.h>
-#include <stdint.h>
 #include <libc.h>
+#include <string.h>
 }
 
 #include "app.h"
@@ -37,6 +39,7 @@ void Window::size(int16_t x, int16_t y, int16_t w, int16_t h) {
 
     if (isopen) {
         wind_set(handle, WF_CURRXYWH, x, y, w, h);
+        event_resized();
     }
 }
 
@@ -71,10 +74,10 @@ bool intersect_xywh(int16_t *dst, int16_t *src)
 }
 
 // Redraw part of the window contents
-void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h) 
+void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
 {
     // Disable updates
-    graf_mouse(M_OFF, (MFORM *)NULL);
+    graf_mouse(M_OFF, nullptr);
     wind_update(BEG_UPDATE);
 
     // set clipping rectangle to updated area
@@ -83,7 +86,7 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
     cliprect[1] = y;
     cliprect[2] = w;
     cliprect[3] = h;
-    
+
     // Get first rectangle
     int16_t r[4];
     wind_get(handle, WF_FIRSTXYWH, &r[0], &r[1], &r[2], &r[3]);
@@ -101,17 +104,25 @@ void Window::redraw(int16_t vhandle, int16_t x, int16_t y, int16_t w, int16_t h)
             temp[2] = r[0] + r[2] - 1;
             temp[3] = r[1] + r[3] - 1;
             vs_clip(vhandle, 1, temp);
-            
             draw(vhandle, temp);
         }
-        
+
         // Get next rectangle
         wind_get(handle, WF_NEXTXYWH, &r[0], &r[1], &r[2], &r[3]);
     }
-    
+
     // Enable updates
     wind_update(END_UPDATE);
-    graf_mouse(M_ON, (MFORM *)NULL);
+    graf_mouse(M_ON, nullptr);
+}
+
+// Force a redraw by sending a WM_REDRAW message to the application
+void Window::redraw_window() {
+    int16_t msg[8] = {
+        WM_REDRAW, app->app_id, 0, handle,
+        dimensions[0], dimensions[1], dimensions[2], dimensions[3]
+    };
+    appl_write(app->app_id, 16, msg);
 }
 
 // Topped as in brought to top (focused)
@@ -132,8 +143,7 @@ void Window::event_fulled()
         maximised = true;
     } else {
         // Return to non-maximised dimensions
-        size(nm_dimensions[0], nm_dimensions[1], 
-            nm_dimensions[2], nm_dimensions[3]);
+        size(nm_dimensions[0], nm_dimensions[1], nm_dimensions[2], nm_dimensions[3]);
         maximised = false;
     }
 }
@@ -155,16 +165,16 @@ void Window::open() {
 
     // Connect the window to AES
     handle = wind_create(style, 0, 0, 640, 400);
-    wind_set(handle, WF_NAME, (int32_t)title >> 16, 
+    wind_set(handle, WF_NAME, (int32_t)title >> 16,
         (int32_t)title & 0xFFFF, 0, 0);
 
     // Update the work area details
     update();
-    
+
     // Open the window
-    wind_open(handle, dimensions[0], dimensions[1], 
+    wind_open(handle, dimensions[0], dimensions[1],
         dimensions[2], dimensions[3]);
-        
+
     isopen = true;
 }
 
@@ -179,12 +189,16 @@ void Window::close() {
 void Window::event_closed() {
 }
 
+void Window::event_resized() {
+}
+
 // Draw client area
 void Window::draw(int16_t vhandle, int16_t rect[])
 {
     // Set draw mode=REPLACE, fill style=solid
     vswr_mode(vhandle, 1);
 	vsf_interior(vhandle, 1);
+    vs_clip(vhandle, 1, rect);
 
     // Paint white
     vsf_color(vhandle, 0);
@@ -201,6 +215,3 @@ void Window::setstyle(int16_t s)
 {
     style = s;
 }
-
-
-

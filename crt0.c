@@ -1,28 +1,26 @@
 #include <stdint.h>
 #include <libc.h>
-//#include <tos.h>
+#include <tos.h>
 
 extern void *stack;
 int main(int argc, char **argv);
 void __do_global_ctors_aux();
 void __do_global_dtors_aux();
+void __cxa_finalize(void *f);
 
 int __libc_start_main()
 {
-    char *args[1];
-    args[0] = "";
+    char *args[] = { "" };
     __do_global_ctors_aux();
-    malloc_init(256 * 1024); // Alloc 256k for now.
     int result = main(1, args);
     __do_global_dtors_aux();
 
-	//Cnecin();
     return result;
 }
 
 __attribute__ ((noreturn))
 __attribute__ ((section(".entry")))
-void _start() 
+void _start()
 {
     __asm__ __volatile__
     (

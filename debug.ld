@@ -2,16 +2,26 @@ SECTIONS {
 	. = 0;
 	.text : {
 		crt0.o (.entry)
-		*(.text.startup)
+		/* Normal .text */
 		*(.text)
+		/* C++ static methods seem to go into their own segment */
 		*(.text.*)
-		PROVIDE(_etext = .);
+		/* _etext = .; */		
 	}
 	.data : {
-		*(.rodata*)
 		*(.data*)
-		. = ALIGN(2);
-		PROVIDE(_edata = .);
+		*(.rodata*)
+		*(.init_array)
+		. = ALIGN(4);
+		__CTOR_LIST__ = .;
+		crtstuff.o(.ctors)
+		*(.ctors)
+		__CTOR_END__ = .;
+		__DTOR_LIST__ = .;
+		*(.dtors)
+		crtstuff.o(.dtors)
+		__DTOR_END__ = .;
+		/* _edata = .; */
 	}
 	.bss : {
 		*(.bss)

@@ -6,34 +6,36 @@ SECTIONS {
 		*(.text)
 		/* C++ static methods seem to go into their own segment */
 		*(.text.*)
-		PROVIDE(_etext = .);
+		/* _etext = .; */
 	}
 	.data : {
 		*(.data*)
 		*(.rodata*)
+		*(.init_array)
 		. = ALIGN(4);
-		PROVIDE(__CTOR_LIST__ = .);
+		__CTOR_LIST__ = .;
 		crtstuff.o(.ctors)
 		*(.ctors)
-		PROVIDE(__CTOR_END__ = .);
-		PROVIDE(__DTOR_LIST__ = .);
+		__CTOR_END__ = .;
+		__DTOR_LIST__ = .;
 		*(.dtors)
 		crtstuff.o(.dtors)
-		PROVIDE(__DTOR_END__ = .);
-		PROVIDE(_edata = .);
+		__DTOR_END__ = .;
+		/* _edata = .; */
 	}
 	.bss : {
 		*(.bss)
 		. = ALIGN(2);
-		PROVIDE(_end = .);
+		/* _end = .; */
 	}
-	. = . + 0x4000;
+	/* Allow a 32KB stack */
+	. = . + 0x8000;
 	stack = ALIGN(2);
-	
+
 	/DISCARD/ : {
 		*(.group)
 		*(.comment)
 		*(.debug*)
+		*(.note.*)
 	}
 }
-

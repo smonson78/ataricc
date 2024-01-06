@@ -2,45 +2,32 @@
 #include <tos.h>
 #include <stdarg.h>
 
+FILE *stdin = (FILE *)0;
 FILE *stdout = (FILE *)1;
+FILE *stdaux = (FILE *)2;
+FILE *stdprn = (FILE *)3;
 
-struct memblock_t *malloc_head;
-size_t malloc_total_size;
+static const char *digits = "0123456789abcdef";
 
-void malloc_init(size_t memsize)
+static int16_t fmt_uint(uint32_t val, int16_t base, char *buf)
 {
-    malloc_head = (struct memblock_t *)Malloc(memsize);
-    if (malloc_head) {
-        malloc_total_size = memsize;
-        malloc_head->size = memsize - sizeof(struct memblock_t);
-        malloc_head->next = NULL;
-        malloc_head->prev = NULL;
-        malloc_head->used = 0;
-    }
-    else
-        malloc_total_size = 0;
-}
-
-static int16_t fmt_int(uint32_t val, int16_t base, int16_t neg, char *buf)
-{
-	static const char *digits = "0123456789abcdef";
 	char temp[10];
 	int16_t size = 0;
 	int16_t i;
-	
+
 	/* Handle special case of 0 */
 	if (val == 0) {
 		buf[0] = '0';
 		buf[1] = 0;
 		return 1;
 	}
-	
+
 	/* Convert number to series of digits */
 	while (val)	{
 		temp[size++] = digits[val % base];
 		val /= base;
 	}
-	
+
 	/* Reverse digits into output buffer */
 	for (i = 0; i < size; i++) {
 		buf[size - i - 1] = temp[i];
@@ -50,17 +37,59 @@ static int16_t fmt_int(uint32_t val, int16_t base, int16_t neg, char *buf)
 	return size;
 }
 
-int vfprintf(FILE *stream, const char *format, va_list arg)
+static int16_t fmt_int(int32_t val, int16_t base, char *buf)
+{
+	char temp[10];
+	int16_t size = 0;
+	int16_t i;
+	int16_t neg;
+
+	/* Handle special case of 0 */
+	if (val == 0) {
+		buf[0] = '0';
+		buf[1] = 0;
+		return 1;
+	}
+
+	if (val < 0) {
+		neg = 1;
+		val = -val;
+		buf[0] = '-';
+	} else {
+		neg = 0;
+	}
+
+	/* Convert number to series of digits */
+	while (val)	{
+		temp[size++] = digits[val % base];
+		val /= base;
+	}
+
+	/* Reverse digits into output buffer */
+	for (i = 0; i < size; i++) {
+		buf[size - i - 1 + neg] = temp[i];
+	}
+
+	buf[size + neg] = 0;
+	return size + neg;
+}
+
+void emit_multi(void (*emit)(char **, char), char **emit_data, const char *s) {
+	while (*s) {
+		emit(emit_data, *(s++));
+	}
+}
+
+int vfprintf(void (*emit)(char **, char), char **emit_data, const char *format, va_list arg)
 {
 	char temp[11];
 	uint16_t i;
-	
+
 	while (*format)
 	{
 		if (*format == '%')
 		{
 			int16_t width = 0;
-			int16_t neg = 0;
 			int16_t fill = ' ';
 			int16_t ljust = 0;
 			uint16_t done = 0;
@@ -68,7 +97,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 			int16_t length;
 
 			format++;
-			
+
 			/* Get modifiers first */
 			while (!done)
 			{
@@ -92,84 +121,110 @@ int vfprintf(FILE *stream, const char *format, va_list arg)
 				width += *format - '0';
 				format++;
 			}
-			
+
 			if (*format == 'l') {
 				longarg = 1;
 				format++;
 			}
-			
+
 			switch (*format)
 			{
 			case '%':
 				temp[0] = '%';
 				length = 1;
 				break;
-					
+
 			case 'c':
-				temp[0] = (char)va_arg(arg, int);
+				temp[0] = (char)__builtin_va_arg(arg, int);
 				length = 1;
 				break;
-				
+
 			case 'd':
 			case 'i':
-				if (longarg)
-					length = fmt_int(va_arg(arg, long int), 10, neg, temp);
-				else
-					length = fmt_int(va_arg(arg, int), 10, neg, temp);
+				if (longarg) {
+					length = fmt_int(va_arg(arg, long int), 10, temp);
+				} else {
+					length = fmt_int(va_arg(arg, int), 10, temp);
+				}
 				break;
-				
+
+      case 'u':
+				if (longarg) {
+					length = fmt_uint(va_arg(arg, long int), 10, temp);
+				} else {
+					length = fmt_uint(va_arg(arg, int), 10, temp);
+				}
+				break;
+
 			case 'x':
-				if (longarg)
-					length = fmt_int(va_arg(arg, long int), 16, neg, temp);
-				else
-					length = fmt_int(va_arg(arg, int), 16, neg, temp);
+				if (longarg) {
+					length = fmt_uint(va_arg(arg, long int), 16, temp);
+				} else {
+					length = fmt_uint(va_arg(arg, int), 16, temp);
+				}
 				break;
 
 			case 'p':
-				length = fmt_int(va_arg(arg, long int), 16, 0, temp);
+				length = fmt_uint(va_arg(arg, long int), 16, temp);
 				width = 8;
 				fill = '0';
 				break;
-				
-		    case 's':
-		        // FIXME: this has to skip the 'temp' stuff
-		        Cconws(va_arg(arg, const char *));
-		        length = 0;
-                break;
-                
+
+	    case 's':
+	        // FIXME: this has to skip the 'temp' stuff
+	        emit_multi(emit, emit_data, va_arg(arg, const char *));
+	        length = 0;
+              break;
+
 			default:
 				/* It's an error! */
 				continue;
 			}
-			
-			temp[length] = 0;
-			if (ljust)
-				Cconws(temp);
-				
-			for (i = length; i < width; i++)
-				Cconout(fill);
-			
-			if (!ljust)
-				Cconws(temp);
+
+			if (length != 0) {
+				temp[length] = 0;
+				if (ljust) {
+					emit_multi(emit, emit_data, temp);
+				}
+
+				for (i = length; i < width; i++) {
+					emit(emit_data, fill);
+				}
+
+				if (!ljust) {
+					emit_multi(emit, emit_data, temp);
+				}
+			}
 		}
 		else
 		{
-			if (*format == '\n')
-				Cconout('\r');
-			Cconout(*format);
+			if (*format == '\n') {
+				emit(emit_data, '\r');
+			}
+			emit(emit_data, *format);
 		}
-		
+
 		format++;
 	}
-	
+
 	return 0;
 }
 
 int16_t isdigit(char c)
 {
-	if (c >= '0' && c <= '9')
+	if (c >= '0' && c <= '9') {
 		return 1;
+	}
 	return 0;
+}
+
+void emit_console(char **x, char c) {
+	Cconout(c);
+}
+
+void emit_string(char **x, char c) {
+	**x = c;
+	(*x)++;
 }
 
 int printf(const char *format, ...)
@@ -178,7 +233,21 @@ int printf(const char *format, ...)
    int done;
 
    va_start(arg, format);
-   done = vfprintf(stdout, format, arg);
+   done = vfprintf(emit_console, NULL, format, arg);
+   va_end(arg);
+
+   return done;
+}
+
+int sprintf(char *dest, const char *format, ...)
+{
+   va_list arg;
+   int done;
+
+   va_start(arg, format);
+	 char *dest_copy = dest;
+   done = vfprintf(emit_string, &dest_copy, format, arg);
+	 *dest_copy = '\0';
    va_end(arg);
 
    return done;
@@ -195,10 +264,27 @@ int puts(const char *s)
 	return 0;
 }
 
-void memcpy(void *dest, void *src, size_t bytes)
+void memcpy(void *dest, const void *src, size_t bytes)
 {
 	while (bytes--) {
-		*((char *)dest++) = *((char *)src++);
+		*((char *)dest) = *((char *)src);
+		src = (char *)src + 1;
+		dest = (char *)dest + 1;
+	}
+}
+
+size_t strlen(const char *s)
+{
+	const char *p = s;
+	while (*p)
+		p++;
+	return (size_t)p - (size_t)s;
+}
+
+void strcpy(char *dest, const char *src)
+{
+	while (*src) {
+		*(dest++) = *(src++);
 	}
 }
 
@@ -207,102 +293,26 @@ void exit(uint16_t retval)
 	_exit(retval);
 }
 
-void *malloc(size_t size) {
-    struct memblock_t *p, *next;
-    
-    if (size < MALLOC_MIN_ALLOCATION)
-        size = MALLOC_MIN_ALLOCATION;
-
-    //printf("malloc called\n");
-    //printf("  searching for a block of size %d\n", size);
-
-    p = malloc_head;
-    while (p && (p->size < size || p->used)) {
-        //printf("  skipping block of size %d\n", p->size);
-        p = p->next;
-    }
-    
-    if (!p) {
-        //printf("  insufficient free memory available.\n");
-        return 0;
-    }
-    
-    //printf("  Found unused block of size %d\n", p->size);
-    
-    if (p->size > size + sizeof(struct memblock_t) + MALLOC_MIN_ALLOCATION) {
-        //printf("  Block is big enough to split (excess: %d bytes)\n",
-        //    p->size - sizeof(struct memblock_t) - size);
-
-        next = (void *)p + sizeof(struct memblock_t) + size;
-        next->prev = p;
-        next->next = p->next;
-        next->size = p->size - size - sizeof(struct memblock_t);
-        p->next = next;
-        p->size = size;
-        //printf("  p = %p\n", p);
-        //printf("  next = %p\n", next);
-    }
-    
-    p->used = 1;
-    return (void *)p + sizeof(struct memblock_t);
-}
-
-void free (void *m) {
-    //printf("free called (%p)\n", m);
-    struct memblock_t *p = m - sizeof(struct memblock_t);
-    struct memblock_t *other;
-    
-    //printf("  freeing block at %p\n", p);
-    if (p->used != 1) {
-        printf("  error: free() called on unknown block %p\n", p);
-        return;
-    }
-    
-    if (p->prev && p->prev->used == 0) {
-        //printf("  prev block is free, can combine\n");
-        other = p->prev;
-        other->next = p->next;
-        other->size += p->size + sizeof(struct memblock_t);
-        if (p->next)
-            p->next->prev = other;
-        p = other;
-    }
-    
-    if (p->next && p->next->used == 0) {
-        //printf("  next block is free, can combine\n");
-        other = p->next;
-        p->next = other->next;
-        p->size += other->size + sizeof(struct memblock_t);
-        if (p->next)
-            p->next->prev = p;
-    }
-    
-    p->used = 0;
-}
-
 void abort() {
     printf("abort called\n");
 }
 
-void memset(void *dest, int c, size_t bytes) {
+void *memset(void *dest, int c, size_t bytes) {
     while (bytes--) {
-        *((char *)dest++) = (char)c;
+        *(char *)dest = (char)c;
+				dest = (char *)dest + 1;
     }
+		return dest;
 }
 
 int memcmp(const void *s1, const void *s2, size_t n)
 {
     while (n--) {
-        if (*(uint8_t *)s1 != *(uint8_t *)s2)
-            return *(uint8_t *)s1 - *(uint8_t *)s2;
-        s1++;
-        s2++;
+			if (*((uint8_t *)s1) != *((uint8_t *)s2)) {
+					return *(uint8_t *)s1 - *(uint8_t *)s2;
+			}
+				s1 = (uint8_t *)s1 + 1;
+				s2 = (uint8_t *)s2 + 1;
     }
     return 0;
 }
-
-int strlen(const char *src) {
-    printf("strlen called\n");
-    return 0;
-}
-

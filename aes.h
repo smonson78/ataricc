@@ -66,6 +66,7 @@ int16_t crys_if(int16_t opcode);
 
 int16_t appl_init();
 int16_t appl_exit();
+int16_t appl_write(int16_t ap_wid, int16_t ap_wlength, void *ap_wpbuff);
 
 void v_opnvwk (int16_t *work_in, int16_t *handle, int16_t *work_out);
 void vq_extnd (int16_t handle, int16_t owflag, int16_t *work_out);
@@ -101,8 +102,8 @@ void vr_recfl(int16_t handle, int16_t *pxyarray);
 void v_bar(int16_t handle, int16_t *pxyarray);
 int16_t vswr_mode(int16_t handle, int16_t mode);
 int16_t vsf_interior(int16_t handle, int16_t style);
-void v_ellipse (int16_t handle, int16_t x, int16_t y, int16_t xradius,
-    int16_t yradius);
+void v_ellipse (int16_t handle, int16_t x, int16_t y, int16_t xradius, int16_t yradius);
+void v_gtext(int16_t handle, int16_t x, int16_t y, const char *string);
 void vqf_attributes(int16_t handle, int16_t *attrib);
 int16_t vsf_style(int16_t handle, int16_t style_index);
 int16_t vsf_perimeter(int16_t handle, int16_t per_vis);
@@ -117,5 +118,9 @@ int16_t rsrc_load (const char *re_lpfname);
 
 // menu
 int16_t menu_bar(OBJECT *me_btree, Menu_Operation me_bshow);
+int16_t menu_tnormal(OBJECT *me_ntree, int16_t me_ntitle, int16_t me_nnormal);
+
+// file
+int16_t fsel_input(char *fs_iinpath, char *fs_iinsel, int16_t *fs_iexbutton);
 
 #endif
