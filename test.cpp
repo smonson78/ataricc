@@ -39,6 +39,24 @@ class SmonsonWindow : public Window {
           "[1][|Smonson was filmed in front of|a live studio audience.]"
           "[ OK ]");
     }
+
+    void menu_open() {
+        char path[200];
+        char name[13];
+        int16_t result;
+        strcpy(path, "C:\\*.TXT");
+        name[0] = '\0';
+        fsel_input(path, name, &result);
+
+        char msg[80];
+        if (result) {
+            sprintf(msg, "[2][You selected: %s][ Thanks! ]", name);
+        } else {
+            sprintf(msg, "[2][Cancelled!][ OK ]", name, result);
+        }
+        form_alert(1, msg);
+    }
+
 };
 /*
 void recurse_print(OBJECT *b, int start)
@@ -64,14 +82,7 @@ Menu *programMenu;
 Menu *fileMenu;
 
 void open_callback() {
-  char path[200];
-  char name[13];
-  int16_t result;
-  fsel_input(path, name, &result);
-
-  char msg[80];
-  sprintf(msg, "[2][You selected: %s][ Thanks! ]", name);
-  form_alert(1, msg);
+    simon.menu_open();
 }
 
 void quit_callback() {
@@ -116,14 +127,16 @@ void get_menubar() {
 
 int main(int argc, char **argv)
 {
-  // Reset terminal
-  //printf("\x1b");
-  //printf("E\n\n\n--start--\n");
+    // Reset terminal
+    printf("\x1b");
+    printf("E\n\n\n--start--\n");
 
-  //printf("Hello!\n%d %p %s %x\n", 123, buf, "greetings", 255);
-  //sprintf(buf, "Hello!\n%d %p %s %x\n", 123, buf, "greetings", 255);
-  //printf("\n[%s]", buf);
-  //Cconin();
+    char buf[1000];
+    printf("Hello!\n%d %p %s %x\n", 123, buf, "greetings", 255);
+    sprintf(buf, "Hello!\n%d %p %s %x", 123, buf, "greetings", 255);
+    printf("\n[%s]", buf);
+
+    Cconin();
 
 	simon.setstyle(WIND_BASIC);
 	simon.settitle("Smonson");
@@ -140,14 +153,14 @@ int main(int argc, char **argv)
 
 	simon.open();
 
-  get_menubar();
-  app.add_menubar(menubar);
+    get_menubar();
+    app.add_menubar(menubar);
 
 	//recurse_print(menubar->get_object_array(), 0);
 
-  // Main loop
-  app.run();
-  //delete simon2;
+    // Main loop
+    app.run();
+    //delete simon2;
 
-  return 0;
+    return 0;
 }

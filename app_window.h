@@ -1,11 +1,12 @@
 #ifndef __APP_WINDOW_H
 #define __APP_WINDOW_H
 
+#include <cstdint>
+
 extern "C" {
 #include <aes.h>
 #include <aes_window.h>
 #include <tos.h>
-#include <stdint.h>
 }
 
 class Application;

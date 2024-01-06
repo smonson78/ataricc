@@ -2,12 +2,15 @@
 #define __LIBC_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #include "gemdos.h"
 
 #define MALLOC_MIN_ALLOCATION 32
 
+#ifndef __cplusplus
 #define NULL ((void *)0)
+#endif
 
 extern FILE *stdout;
 extern void _exit(uint16_t retval);
@@ -19,9 +22,6 @@ struct memblock_t {
     uint8_t used;
 };
 
-extern struct memblock_t *malloc_head;
-extern size_t malloc_total_size;
-
 int printf(const char *format, ...);
 int sprintf(char *dest, const char *format, ...);
 void putchar(char c);
@@ -32,7 +32,7 @@ int16_t isdigit(char c);
 void memcpy(void *dest, const void *src, size_t bytes);
 void strcpy(char *dest, const char *src);
 int memcmp(const void *s1, const void *s2, size_t n);
-void memset(void *dest, int c, size_t bytes);
+void *memset(void *dest, int c, size_t bytes);
 
 void malloc_init(size_t memsize);
 

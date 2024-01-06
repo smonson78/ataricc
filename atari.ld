@@ -11,6 +11,7 @@ SECTIONS {
 	.data : {
 		*(.data*)
 		*(.rodata*)
+		*(.init_array)
 		. = ALIGN(4);
 		__CTOR_LIST__ = .;
 		crtstuff.o(.ctors)
@@ -35,5 +36,6 @@ SECTIONS {
 		*(.group)
 		*(.comment)
 		*(.debug*)
+		*(.note.*)
 	}
 }

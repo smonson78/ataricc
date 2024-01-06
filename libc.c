@@ -7,9 +7,10 @@ FILE *stdout = (FILE *)1;
 FILE *stdaux = (FILE *)2;
 FILE *stdprn = (FILE *)3;
 
+static const char *digits = "0123456789abcdef";
+
 static int16_t fmt_uint(uint32_t val, int16_t base, char *buf)
 {
-	static const char *digits = "0123456789abcdef";
 	char temp[10];
 	int16_t size = 0;
 	int16_t i;
@@ -38,7 +39,6 @@ static int16_t fmt_uint(uint32_t val, int16_t base, char *buf)
 
 static int16_t fmt_int(int32_t val, int16_t base, char *buf)
 {
-	static const char *digits = "0123456789abcdef";
 	char temp[10];
 	int16_t size = 0;
 	int16_t i;
@@ -135,30 +135,33 @@ int vfprintf(void (*emit)(char **, char), char **emit_data, const char *format, 
 				break;
 
 			case 'c':
-				temp[0] = (char)va_arg(arg, int);
+				temp[0] = (char)__builtin_va_arg(arg, int);
 				length = 1;
 				break;
 
 			case 'd':
 			case 'i':
-				if (longarg)
+				if (longarg) {
 					length = fmt_int(va_arg(arg, long int), 10, temp);
-				else
+				} else {
 					length = fmt_int(va_arg(arg, int), 10, temp);
+				}
 				break;
 
       case 'u':
-				if (longarg)
+				if (longarg) {
 					length = fmt_uint(va_arg(arg, long int), 10, temp);
-				else
+				} else {
 					length = fmt_uint(va_arg(arg, int), 10, temp);
+				}
 				break;
 
 			case 'x':
-				if (longarg)
+				if (longarg) {
 					length = fmt_uint(va_arg(arg, long int), 16, temp);
-				else
+				} else {
 					length = fmt_uint(va_arg(arg, int), 16, temp);
+				}
 				break;
 
 			case 'p':
@@ -180,20 +183,24 @@ int vfprintf(void (*emit)(char **, char), char **emit_data, const char *format, 
 
 			if (length != 0) {
 				temp[length] = 0;
-				if (ljust)
+				if (ljust) {
 					emit_multi(emit, emit_data, temp);
+				}
 
-				for (i = length; i < width; i++)
+				for (i = length; i < width; i++) {
 					emit(emit_data, fill);
+				}
 
-				if (!ljust)
+				if (!ljust) {
 					emit_multi(emit, emit_data, temp);
+				}
 			}
 		}
 		else
 		{
-			if (*format == '\n')
+			if (*format == '\n') {
 				emit(emit_data, '\r');
+			}
 			emit(emit_data, *format);
 		}
 
@@ -205,8 +212,9 @@ int vfprintf(void (*emit)(char **, char), char **emit_data, const char *format, 
 
 int16_t isdigit(char c)
 {
-	if (c >= '0' && c <= '9')
+	if (c >= '0' && c <= '9') {
 		return 1;
+	}
 	return 0;
 }
 
@@ -259,7 +267,9 @@ int puts(const char *s)
 void memcpy(void *dest, const void *src, size_t bytes)
 {
 	while (bytes--) {
-		*((char *)dest++) = *((char *)src++);
+		*((char *)dest) = *((char *)src);
+		src = (char *)src + 1;
+		dest = (char *)dest + 1;
 	}
 }
 
@@ -287,19 +297,22 @@ void abort() {
     printf("abort called\n");
 }
 
-void memset(void *dest, int c, size_t bytes) {
+void *memset(void *dest, int c, size_t bytes) {
     while (bytes--) {
-        *((char *)dest++) = (char)c;
+        *(char *)dest = (char)c;
+				dest = (char *)dest + 1;
     }
+		return dest;
 }
 
 int memcmp(const void *s1, const void *s2, size_t n)
 {
     while (n--) {
-        if (*(uint8_t *)s1 != *(uint8_t *)s2)
-            return *(uint8_t *)s1 - *(uint8_t *)s2;
-        s1++;
-        s2++;
+			if (*((uint8_t *)s1) != *((uint8_t *)s2)) {
+					return *(uint8_t *)s1 - *(uint8_t *)s2;
+			}
+				s1 = (uint8_t *)s1 + 1;
+				s2 = (uint8_t *)s2 + 1;
     }
     return 0;
 }

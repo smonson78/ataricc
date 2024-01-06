@@ -1,9 +1,10 @@
 
+#include <cstdint>
+
 extern "C" {
 #include <aes.h>
 #include <aes_window.h>
 #include <tos.h>
-#include <stdint.h>
 #include <libc.h>
 #include <string.h>
 }

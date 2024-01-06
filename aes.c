@@ -398,7 +398,7 @@ void v_bar(int16_t handle, int16_t *pxyarray)
    vdi();
 }
 
-void v_ellipse (int16_t handle, int16_t x, int16_t y, int16_t xradius,
+void v_ellipse(int16_t handle, int16_t x, int16_t y, int16_t xradius,
     int16_t yradius)
 {
    vdi_ptsin[0] = x;
@@ -410,6 +410,23 @@ void v_ellipse (int16_t handle, int16_t x, int16_t y, int16_t xradius,
    vdi_control[1] = 2;
    vdi_control[3] = 0;
    vdi_control[5] = 5;
+   vdi_control[6] = handle;
+
+   vdi();
+}
+
+void v_gtext(int16_t handle, int16_t x, int16_t y, const char *string)
+{
+   vdi_ptsin[0] = x;
+   vdi_ptsin[1] = y;
+
+   int i = 0;
+   while ((vdi_intin[i++] = *string++)) {
+   }
+
+   vdi_control[0] = 8;
+   vdi_control[1] = 1;
+   vdi_control[3] = -i;
    vdi_control[6] = handle;
 
    vdi();
@@ -587,7 +604,7 @@ void new_object(OBJECT *o, uint16_t type, void *spec, uint16_t x, uint16_t y,
 }
 #endif
 
-int16_t fsel_input(int8_t *fs_iinpath, int8_t *fs_iinsel, int16_t *fs_iexbutton) {
+int16_t fsel_input(char *fs_iinpath, char *fs_iinsel, int16_t *fs_iexbutton) {
 	addr_in[0] = fs_iinpath;
 	addr_in[1] = fs_iinsel;
 
